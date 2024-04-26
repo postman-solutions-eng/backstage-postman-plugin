@@ -142,6 +142,10 @@ export async function createRouter(options: RouterOptions): Promise<express.Rout
     }
   });
 
+  router.get('/health', (_req: Request, res: Response) => {
+    res.json({ status: 'ok' });
+  });
+
   router.use(errorHandler());
   return router;
 }

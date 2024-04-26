@@ -6,7 +6,12 @@ import { createRouter } from './router';
 
 import { ConfigReader } from '@backstage/config';
 
-const config = new ConfigReader({});
+const config = new ConfigReader({
+  postman: {
+    apiKey: '1234',
+    baseUrl: 'https://api.getpostman'
+  }
+});
 
 describe('createRouter', () => {
   let app: express.Express;
