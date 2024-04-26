@@ -37,7 +37,7 @@ This guide provides instructions for configuring your application to interact wi
 
 ### Basic Configuration
 
-**API Key Setup**: First, include the base URL and set environment variable `POSTMAN_API_KEY` with your API key in the configuration file.
+**API Key Setup**: First, include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file.
 
 > [!CAUTION]
 > The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
