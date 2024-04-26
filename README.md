@@ -39,10 +39,9 @@ This guide provides instructions for configuring your application to interact wi
 
 **API Key Setup**: First, include the base URL and set environment variable POSTMAN_API_KEY to your API key in the configuration file.
 
-<div style="background-color: #fcedec; margin: 1em 0; padding: 10px; color: rgb(95, 33, 32);">
-<h4 style="padding: 0; margin: 0 0 1em;">:rotating_light: Important Security Note:</h4> 
-The _apiKey_ in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an _apiKey_ from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
-</div>
+> [!CAUTION]
+> ***Important Security Note:***
+> The _apiKey_ in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an _apiKey_ from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
 ```yaml
     postman:
