@@ -1,0 +1,14 @@
+# Contributing to the Postman Bakcstage Backend Plugin
+
+Thank you for considering contributing to postman-backstage-backend-plugin! 
+
+Please follow these guidelines to contribute to the project effectively:
+
+1. Fork the repository and clone it locally.
+2. Create a new branch for your feature/fix using a descriptive name.
+3. Make your changes and ensure that the code passes all tests.
+4. Write clear and concise commit messages.
+5. Push your branch to your fork and submit a pull request to the `develop` branch of the main repository.
+6. Ensure that your pull request description clearly explains the problem and solution.
+
+By contributing to this project, you agree to abide by the code of conduct (CODE_OF_CONDUCT.md).
