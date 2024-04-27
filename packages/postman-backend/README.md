@@ -109,18 +109,3 @@ async function main() {
 ```
 
 6. (optional), you can run `yarn start-backend` from the root directory to start the backend server
-
-## License
-
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code according to the terms of the license.
-
-## Contributing
-Thank you for considering contributing to this project! Please check out the [contribution guidelines](CONTRIBUTING.md) for more information on how to get started.
-
-## Code of Conduct
-
-We expect all contributors to adhere to the [Code of Conduct](CODE_OF_CONDUCT.md). Please review the guidelines before contributing to ensure a positive and inclusive community for everyone.
-
-## Contact
-
-If you have any questions, concerns, or suggestions regarding this project, feel free to contact [@aphanor-postman](https://github.com/aphanor-postman) or [@jonico](https://github.com/jonico).
