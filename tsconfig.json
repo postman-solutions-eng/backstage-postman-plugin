@@ -1,7 +1,7 @@
 {
   "extends": "@backstage/cli/config/tsconfig.json",
   "include": [
-    "src",
+    "packages/postman-backend/src",
     "dev"
   ],
   "exclude": [
