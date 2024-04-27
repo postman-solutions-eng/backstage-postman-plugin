@@ -1,7 +1,7 @@
 <p align="center">
   <img src="./assets/postman-logo.png" width="200px" alt="postman logo"/>
 </p>
-<h1 align="center">Backstage Postman Plugin</h1>
+<h1 align="center">Postman Plugin For Backstage</h1>
 
 This plugin is designed to seamlessly integrate Postman functionality into your Backstage application. It simplifies the addition of a Postman card to your API views and enables dynamic retrieval of Postman resources like collections and APIs. By linking your APIs with Postman collections or APIs, it empowers consumers to interact effortlessly with these resources within the Postman interface. This includes features such as a `Run in Postman` button and the ability to dynamically fetch collections or APIs from Postman and adding them to your API list using an `Entity Provider`.
 
