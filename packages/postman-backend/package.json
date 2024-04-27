@@ -1,5 +1,5 @@
 {
-  "name": "@aphanor-postman/postman-backstage-backend-plugin",
+  "name": "@postman-solutions/postman-backstage-backend-plugin",
   "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,6 +13,14 @@
   "backstage": {
     "role": "backend-plugin"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/postman-solutions-eng/backstage-postman-plugin"
+  },
+  "keywords": [
+    "backstage",
+    "postman"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
