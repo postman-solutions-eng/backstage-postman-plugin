@@ -82,7 +82,7 @@ If you do not like to apply caching / get quicker updates when new entities get 
 ```ts
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { createRouter } from '@internal/backstage-plugin-postman-backend';
+import { createRouter } from '@postman-solutions/backstage-plugin-postman-backend';
 
 export default async function createPlugin({
   logger,

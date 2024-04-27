@@ -94,7 +94,7 @@ To get a Postman API Key, follow the instructions [here](https://learning.postma
 
 ``` ts
 // ... other imports here
-import { PostmanCard } from '@internal/backstage-plugin-postman';
+import { PostmanCard } from '@postman-solutions/backstage-plugin-postman';
 // ... other components
 const apiPage = (
   <EntityLayout>
@@ -132,7 +132,7 @@ Additionally, you would need to insert the following lines into your `packages/b
 ``` ts
 ...
 // new code after other imports
-import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backend';
+import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
 ...
 
 ...
@@ -360,7 +360,7 @@ If you do not like to apply caching / get quicker updates when new entities get 
 ```ts
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { createRouter } from '@internal/backstage-plugin-postman-backend';
+import { createRouter } from '@postman-solutions/backstage-plugin-postman-backend';
 
 export default async function createPlugin({
   logger,
