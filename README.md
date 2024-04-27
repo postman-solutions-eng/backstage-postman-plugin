@@ -65,7 +65,7 @@ For more details, refer to [this section](#monitors-use-monitor-id-or-name).
 
 A *Governance Checks* view will be added in future versions of this plugin.
 
-## Installation
+# Installation
 
 ```sh
 # From your Backstage root directory
@@ -74,6 +74,8 @@ yarn --cwd packages/backend add @postman-solutions/backstage-plugin-postman-back
 ```
 
 # Configure Postman Frontend Plugin for Backstage
+
+## Getting started
 
 1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
 
@@ -184,7 +186,7 @@ metadata:
   postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
 ```
 
-## APIs
+### APIs
 
 | Parameter | Schema Type | Optional | Description |
 | --------- | ----------- | -------- | ----------- |
@@ -192,7 +194,7 @@ metadata:
 | `postman/api/name` | string | Yes | (optional) The name of your Postman API. If referenced, this value will be used to fetch the API Postman monitor(s) using the API name. |
 
 
-### Using the API ID
+#### Using the API ID
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -203,7 +205,7 @@ metadata:
   postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
 ```
 
-### API with API name
+#### API with API name
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -215,7 +217,7 @@ metadata:
   postman/api/name: "YOUR_POSTMAN_API_NAME"
 ```
 
-## Collections (Use collection tag or IDs)
+### Collections (Use collection tag or IDs)
 
 | Parameter | Schema Type | Optional | Description |
 | --------- | ----------- | -------- | ----------- |
@@ -224,7 +226,7 @@ metadata:
 | `postman/collections/tag` | string | Yes | A string specifying the collection tag to retrieve. |
 | `postman/collections/pagination` | string | Yes | A 'true' or 'false" value to indicate whether you want to paginate through the results. |
 
-### Get collection by ID
+#### Get collection by ID
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -233,7 +235,7 @@ metadata:
   postman/collection/id: "YOUR_COLLECTION_ID"
 ```
 
-### Using collection tag
+#### Using collection tag
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -243,7 +245,7 @@ metadata:
   postman/collections/tag: "YOUR_COLLECTION_TAG_HERE"
 ```
 
-### Using collection IDs
+#### Using collection IDs
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -252,14 +254,14 @@ metadata:
   postman/collections/ids: ["YOUR_FIRST_COLLECTION_ID", "YOUR_SECOND_COLLECTION_ID"]
 ```
 
-## Monitors (Use monitor ID or name)
+### Monitors (Use monitor ID or name)
 
 | Parameter | Schema Type | Optional | Description |
 | --------- | ----------- | -------- | ----------- |
 | `postman/monitor/id` | string | No | The ID of your Postman monitor. |
 | `postman/monitor/name` | string | No | The name of your Postman monitor. |
 
-### Using monitor id
+#### Using monitor id
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -268,7 +270,7 @@ metadata:
   postman/monitor/id: "YOUR_MONITOR_ID_HERE"
 ```
 
-### Using monitor name
+#### Using monitor name
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
