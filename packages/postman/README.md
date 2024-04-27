@@ -9,38 +9,15 @@ This plugin is not officially supported by Postman and is intended for Backstage
 
 ## Dependencies
 
-To run this Postman plugin in Backstage, you need to install two plugins:
-
-1. **Postman Front-end Plugin:** Clone this directory to your project's `plugins/` folder to add the frontend components.
-2. **Postman Backend Plugin (`postman-backend`):** To enable secure communication with Postman services, you need to install the Postman Backend Plugin (`postman-backend`). 
+To run this Postman plugin in Backstage, follow the installion steps [here](https://github.com/postman-solutions-eng/backstage-postman-plugin#installation).
 
 *Important:* Please note that the frontend plugin will not function without the backend plugin.
 
-Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-demo/tree/main/plugins/postman-backend).
+Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#configure-postman-backend-plugin-for-backstage).
 
 ## Getting Started
 
-1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
-
-```yaml
-postman:
-    baseUrl: https://api.postman.com
-    apiKey: YOUR_API_KEY_HERE
-```
-
-If you want to store your Postman API Key an environment variable, use this syntax instead:
-
-```yaml
-postman:
-    baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
-```
-
-
-To get a Postman API Key, follow the instructions [here](https://learning.postman.com/docs/developer/postman-api/make-postman-api-call/#get-your-api-key). The API Key should ideally have super admin rights and be created against a service account as opposed to an individual account.
-
-2. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page. 
+1. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page. 
 
 ``` ts
 // ... other imports here
@@ -61,7 +38,7 @@ const apiPage = (
 // ...
 ```
 
-3. Edit your `entities.yaml` file and add the [Postman metadata](#postman-metadata-guide) to display the different views that this plugin offers. More information about the metadata object can be found [here](#postman-metadata-guide).
+2. Edit your `entities.yaml` file and add the [Postman metadata](#postman-metadata-guide) to display the different views that this plugin offers. More information about the metadata object can be found [here](#postman-metadata-guide).
 
 ## Configuring the Postman Entity Provider (optional)
 
@@ -84,7 +61,6 @@ Additionally, you would need to insert the following lines into your `packages/b
 // new code after other imports
 import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backend';
 ...
-
 
 ...
     const builder = CatalogBuilder.create(env);
@@ -110,8 +86,6 @@ import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backen
     });
 ...
 ```
-
-
 
 # Plugin Views
 

@@ -77,21 +77,14 @@ yarn --cwd packages/backend add @postman-solutions/backstage-plugin-postman-back
 
 1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
 
-```yaml
-postman:
-    baseUrl: https://api.postman.com
-    apiKey: YOUR_API_KEY_HERE
-```
-
-If you want to store your Postman API Key an environment variable, use this syntax instead:
+> [!CAUTION]
+> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
 ```yaml
 postman:
     baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
+    apiKey: ${YOUR_API_KEY_HERE}
 ```
-
 
 To get a Postman API Key, follow the instructions [here](https://learning.postman.com/docs/developer/postman-api/make-postman-api-call/#get-your-api-key). The API Key should ideally have super admin rights and be created against a service account as opposed to an individual account.
 
@@ -140,7 +133,6 @@ Additionally, you would need to insert the following lines into your `packages/b
 import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backend';
 ...
 
-
 ...
     const builder = CatalogBuilder.create(env);
     
@@ -166,15 +158,15 @@ import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backen
 ...
 ```
 
-# Postman Metadata Guide
+## Postman Metadata Guide
 
-## Metadata Object Overview
+### Metadata Object Overview
 
 This section provides an overview of the metadata object for this Postman plugin in the context of the Backstage implementation. All parameters should only be defined with the `kind: API` in your YAML file. 
 
 All three options, API, Collections, and Monitor, can be used in conjunction.
 
-## Common Parameters
+### Common Parameters
 
 These parameters are common across different kinds of entities:
 
@@ -298,15 +290,13 @@ Before you begin, ensure you have the following:
 - Node.js and npm installed (Node.js 18.x or later is recommended)
 - Access to Postman API credentials
 
-3. Configure the plugin
-
 ## Configuration Guide
 
 This guide provides instructions for configuring your application to interact with the Postman API using the `app-config.yaml` file. Follow the steps below to set up your environment correctly.
 
 ### Basic Configuration
 
-**API Key Setup**: First, include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file.
+**API Key Setup**: First, make sure to include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file if not done already.
 
 > [!CAUTION]
 > The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
