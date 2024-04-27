@@ -17,7 +17,7 @@ Refer to the installation steps for the backend plugin [here](https://github.com
 
 ## Getting Started
 
-1. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page. 
+1. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page.
 
 ``` ts
 // ... other imports here
@@ -86,38 +86,6 @@ import { PostmanEntityProvider } from '@internal/backstage-plugin-postman-backen
     });
 ...
 ```
-
-# Plugin Views
-
-This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allows you to view your Postman monitor results on the API page.
-
-## API View 
-
-Displays your published Postman API data in Backstage, allowing you to access both the API information and the published API collections.
-
-![Postman API View](examples/images/api.png)
-
-Refer to the [Postman API Metadata](#APIs) to see the parameters needed to display this view.
-
-## Collections View 
-
-Displays the collection(s) of a given API stored in Postman. This view includes a *Run in Postman* button, which is activated based on the collection ID(s) or tag defined in the `entities.yaml` file.
-
-![Postman Collection View](examples/images/collections.png)
-
-Refer to the [Postman Collections Metadata](#monitors-use-monitor-id-or-name) to see the parameters needed to display this view.
-
-### Monitor View 
-
-Shows the health of your API as determined by the monitor in Postman. The monitor can be displayed using either its `name` or `id`. 
-
-![Postman Monitor View](examples/images/monitor.png)
-
-For more details, refer to [this section](#monitors-use-monitor-id-or-name).
-
-## Coming soon 
-
-A *Governance Checks* view will be added in future versions of this plugin.
 
 # Postman Metadata Guide
 
