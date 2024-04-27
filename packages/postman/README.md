@@ -4,7 +4,7 @@ This plugin integrates Postman into Backstage, enabling you to link your APIs to
 It is also possible to discover APIs and collections that have been tagged with a tag of your choice within your Postman Team and add those to the catalog.
 It is a community-driven initiative to extend Backstage functionalities with Postman.
 
-# Disclaimer
+## Disclaimer
 This plugin is not officially supported by Postman and is intended for Backstage users to easily integrate Postman into their API documentation.
 
 ## Dependencies

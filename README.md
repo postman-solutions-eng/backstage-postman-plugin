@@ -75,7 +75,7 @@ yarn --cwd packages/backend add @postman-solutions/backstage-plugin-postman-back
 
 # Configure Postman Frontend Plugin for Backstage
 
-## Getting started
+## Getting Started
 
 1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
 
