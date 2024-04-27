@@ -53,7 +53,7 @@ Displays the collection(s) of a given API stored in Postman. This view includes 
 
 Refer to the [Postman Collections Metadata](#monitors-use-monitor-id-or-name) to see the parameters needed to display this view.
 
-### Monitor View 
+## Monitor View 
 
 Shows the health of your API as determined by the monitor in Postman. The monitor can be displayed using either its `name` or `id`. 
 
