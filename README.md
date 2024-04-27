@@ -140,4 +140,4 @@ We expect all contributors to adhere to the [Code of Conduct](CODE_OF_CONDUCT.md
 
 ## Contact
 
-If you have any questions, concerns, or suggestions regarding this project, feel free to contact [@aphanor-postman](https://github.com/aphanor-postman) or [@jonico](|https://github.com/jonico).
+If you have any questions, concerns, or suggestions regarding this project, feel free to contact [@aphanor-postman](https://github.com/aphanor-postman) or [@jonico](https://github.com/jonico).
