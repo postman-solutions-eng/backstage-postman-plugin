@@ -1,0 +1,12 @@
+{
+    "extends": "@backstage/cli/config/tsconfig.json",
+    "include": [
+        "src"
+    ],
+    "files": ["globals.d.ts"],
+    "exclude": ["node_modules"],
+    "compilerOptions": {
+        "outDir": "dist-types",
+        "rootDir": "."
+    }
+}
