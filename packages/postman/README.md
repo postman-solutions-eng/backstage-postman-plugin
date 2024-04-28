@@ -11,7 +11,7 @@ This plugin is not officially supported by Postman and is intended for Backstage
 
 *Important:* Please note that the frontend plugin will not function without the backend plugin.
 
-Refer to the installation steps for the backend plugin [here]((https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation)).
+Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation).
 
 ## Getting Started
 
