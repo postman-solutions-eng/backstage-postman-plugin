@@ -1,6 +1,6 @@
 {
   "name": "@postman-solutions/postman-backstage-backend-plugin",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
