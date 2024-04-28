@@ -239,8 +239,7 @@ In order for it to work, you would need to add some more properties to your loca
 ```yaml
 postman:
     baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
+    apiKey: ${POSTMAN_API_KEY}
     synchEntitiesWithTag: TAG_NAME
     entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
 ```
@@ -250,14 +249,17 @@ Additionally, you would need to insert the following lines into your `packages/b
 ``` ts
 ...
 // new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
+import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-backend-plugin';
+import { CacheManager } from '@backstage/backend-common';
 ...
 
 ...
     const builder = CatalogBuilder.create(env);
     
     // new code after builder got instantiated
-    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger})
+    const cacheManager = CacheManager.fromConfig(env.config);
+    const cache = cacheManager.forPlugin('postman').getClient({defaultTtl: env.config?.getNumber('postman.cache.ttl') ?? 60000 })
+    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger, cache})
     const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
     builder.addEntityProvider(postmanEntityProvider);
 
