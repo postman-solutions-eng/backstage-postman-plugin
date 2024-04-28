@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Postman Plugin For Backstage</h1>
 
-This plugin is designed to seamlessly integrate Postman functionality into your Backstage application. It simplifies the addition of a Postman card to your API views and enables dynamic retrieval of Postman resources like collections and APIs. By linking your APIs with Postman collections or APIs, it empowers consumers to interact effortlessly with these resources within the Postman interface. This includes features such as a `Run in Postman` button and the ability to dynamically fetch collections or APIs from Postman and adding them to your API list using an `Entity Provider`.
+This plugin is designed to integrate Postman functionality into your Backstage application seamlessly. It simplifies the addition of a Postman card to your API views and enables dynamic retrieval of Postman resources like collections and APIs. Linking your APIs with Postman collections or APIs empowers consumers to interact effortlessly with these resources within the Postman interface. This includes features such as a `Run in Postman` button and the ability to dynamically fetch collections or APIs from Postman and add them to your API list using an `Entity Provider`.
 
 # Table of Contents
 - [Disclaimer and Plugin Compatibility](#disclaimer-and-plugin-compatibility)
@@ -30,12 +30,12 @@ This plugin is designed to seamlessly integrate Postman functionality into your 
 
 
 # Disclaimer and Plugin Compatibility
-These backstage plugins are not officially supported by Postman and are intended for Backstage users to easily integrate Postman into their API documentation.
-They have been successfully tested with Backstage v1.22 and 1.23. Please file an issue if you are using a newer version of backstage so that we can tell you how to best integrate under those circumstances.
+These backstage plugins are not officially supported by Postman and are intended for Backstage users to integrate Postman into their API documentation easily.
+They have been successfully tested with Backstage v1.22 and 1.23. Please file an issue if you are using a newer version of Backstage so that we can recommend how to integrate best under those circumstances.
 
 # Plugin Features
 
-This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allows you to view your Postman monitor results on the API page.
+This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allow you to view your Postman monitor results on the API page.
 
 ## API View 
 
@@ -43,11 +43,11 @@ Displays your published Postman API data in Backstage, allowing you to access bo
 
 ![Postman API View](assets/api.png)
 
-Refer to the [Postman API Metadata](#APIs) to see the parameters needed to display this view.
+Refer to the [Postman API Metadata](#APIs) for the parameters needed to display this view.
 
 ## Collections View 
 
-Displays the collection(s) of a given API stored in Postman. This view includes a *Run in Postman* button, which is activated based on the collection ID(s) or tag defined in the `entities.yaml` file.
+This view displays the collection(s) of a given API stored in Postman. It includes a *Run in Postman* button, which is activated based on the collection ID(s) or tag defined in the `entities.yaml` file.
 
 ![Postman Collection View](assets/collection.png)
 
@@ -55,7 +55,7 @@ Refer to the [Postman Collections Metadata](#monitors-use-monitor-id-or-name) to
 
 ## Monitor View 
 
-Shows the health of your API as determined by the monitor in Postman. The monitor can be displayed using either its `name` or `id`. 
+This view shows the health of your API as determined by a Postman monitor. The monitor can be displayed using its `name` or `id`. 
 
 ![Postman Monitor View](assets/monitor.png)
 
@@ -63,7 +63,7 @@ For more details, refer to [this section](#monitors-use-monitor-id-or-name).
 
 ## Catalog APIs using Postman Tags
 
-You can also use this plugin to fetch **Postman APIs** or **collections** dynamically using Postman tags. Please refer to [this section](#configuring-the-postman-entity-provider-optional) for more details.
+You can also use this plugin to dynamically fetch **Postman APIs** or **collections** using Postman tags. For more details, please refer to [this section](#configuring-the-postman-entity-provider-optional).
 
 ![Postman Entity Provider populating APIs and collections directly from Postman using tags](https://github.com/postman-solutions-eng/backstage-postman-plugin/assets/1872314/9dfb1f9a-a092-4771-b82b-a2e622f8c05d)
 
@@ -80,26 +80,27 @@ yarn --cwd packages/app add @postman-solutions/backstage-plugin-postman
 yarn --cwd packages/backend add @postman-solutions/postman-backstage-backend-plugin
 ```
 
-Then, you would need to configure both plugins as descried in the next two sections.
+The next step is configuring both plugins as described in the next two sections.
 
 # Configure Postman Frontend Plugin for Backstage
 
-The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs, and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
+The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
 
 It is a community-driven initiative to extend Backstage functionalities with Postman.
 
 ## Dependencies
 
-*Important:* Please note that the frontend plugin will not function without the backend plugin.
+> [!IMPORTANT]
+> Please note that the frontend plugin will not function without the backend plugin.
 
-Refer to the installation steps for the backend plugin [here]([https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#configure-postman-backend-plugin-for-backstage](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation)).
+Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation).
 
 ## Getting Started
 
 1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
 
 > [!CAUTION]
-> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
+> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
 ```yaml
 postman:
@@ -132,7 +133,7 @@ const apiPage = (
 
 # Configure Postman Backend Plugin for Backstage
 
-This `postman-backend` plugin provides some Postman services that will be used by the Postman frontebd plugin to render the different component views.
+This `postman-backend` plugin provides some Postman services that the Postman frontend plugin will use to render the different component views.
 
 ## Prerequisites
 
@@ -152,7 +153,7 @@ This guide provides instructions for configuring your application to interact wi
 **API Key Setup**: First, make sure to include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file if not done already.
 
 > [!CAUTION]
-> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
+> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
 ```yaml
     postman:
@@ -167,10 +168,10 @@ This guide provides instructions for configuring your application to interact wi
     | Parameter | Schema Type | Optional | Description |
     | --------- | ----------- | -------- | ----------- |
     | `postman/team` | string | Yes | Name of your Postman team. For a team URL like `https://myteam.postman.co`, your team name would be `myteam.postman.co`. |
-    | `postman/owner` | string | Yes | Owner of the API assets. Default is "postman". Consider creating a User or Group for this owner. |
+    | `postman/owner` | string | Yes | Owner of the API assets. The default is "postman". Consider creating a User or Group for this owner. |
     | `postman/synchEntitiesWithTag` | string | Yes | Postman tag used to fetch API assets. |
     | `postman/entityProviderSynchInterval` | string | Yes | Interval (in hours) for fetching the API assets from Postman. |
-    | `postman/system` | string | Yes | System of the API assets. Default is "main". |
+    | `postman/system` | string | Yes | System of the API assets. The default is "main". |
 
     Example configuration:
 
@@ -189,7 +190,7 @@ This guide provides instructions for configuring your application to interact wi
 
     | Parameter | Schema Type | Optional | Description |
     | --------- | ----------- | -------- | ----------- |
-    | `postman/cache/ttl` | number | Yes | Cache expiry time in milliseconds. Default is 600000 (10 minutes). |
+    | `postman/cache/ttl` | number | Yes | Cache expiry time in milliseconds. The default is 600000 (10 minutes). |
 
     Example configuration for a custom cache duration:
 
@@ -202,7 +203,7 @@ This guide provides instructions for configuring your application to interact wi
           ttl: 300000  # 5 minutes
     ```
 
-If you do not like to apply caching / get quicker updates when new entities get tagged, set a ttl to 0 or a value smaller than the entity service refresh interval.
+If you prefer not to utilise caching and always get the latest information from Postman, you can set the TTL value to 0 or any value smaller than the interval at which the entity service refreshes.
 
 ### Add the backend plugin to your Backstage application 
 
@@ -236,7 +237,7 @@ async function main() {
 }
 ```
 
-3. (optional), you can run `yarn start-backend` from the root directory to start the backend server
+3. (optional) you can run `yarn start-backend` from the root directory to start the backend server
 
 ## Configuring the Postman Entity Provider (optional)
 
@@ -412,7 +413,7 @@ metadata:
 This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code according to the terms of the license.
 
 ## Contributing
-Thank you for considering contributing to this project! Please check out the [contribution guidelines](CONTRIBUTING.md) for more information on how to get started.
+Thank you for considering contributing to this project. For more information on how to get started, please check out the [contribution guidelines](CONTRIBUTING.md).
 
 ## Code of Conduct
 
