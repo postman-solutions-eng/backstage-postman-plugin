@@ -73,6 +73,8 @@ yarn --cwd packages/app add @postman-solutions/backstage-plugin-postman
 yarn --cwd packages/backend add @postman-solutions/postman-backstage-backend-plugin
 ```
 
+Then, you would need to configure both plugins as descried in the next two sections.
+
 # Configure Postman Frontend Plugin for Backstage
 
 The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs, and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
@@ -129,7 +131,7 @@ This `postman-backend` plugin provides some Postman services that will be used b
 
 Before you begin, ensure you have the following:
 
-- Make sure the [Postman frontend](https://github.com/postman-solutions-eng/backstage-demo/tree/main/plugins/postman) is installed first
+- Make sure the Postman Frontend Plugin is already installed and configured
 - A running instance of Backstage
 - Node.js and npm installed (Node.js 18.x or later is recommended)
 - Access to Postman API credentials
