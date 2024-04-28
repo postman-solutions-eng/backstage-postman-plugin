@@ -6,11 +6,12 @@
 This plugin is designed to seamlessly integrate Postman functionality into your Backstage application. It simplifies the addition of a Postman card to your API views and enables dynamic retrieval of Postman resources like collections and APIs. By linking your APIs with Postman collections or APIs, it empowers consumers to interact effortlessly with these resources within the Postman interface. This includes features such as a `Run in Postman` button and the ability to dynamically fetch collections or APIs from Postman and adding them to your API list using an `Entity Provider`.
 
 # Table of Contents
-- [Disclaimer and Plugin Compatibility](#disclaimer)
+- [Disclaimer and Plugin Compatibility](#disclaimer-and-plugin-compatibility)
 - [Plugin Features](#plugin-features)
   - [API View](#api-view)
   - [Collections View](#collections-view)
   - [Monitor View](#monitor-view)
+  - [Catalog APIs using Postman Tags](#catalog-apis-using-postman-tags)
   - [Coming soon](#coming-soon)
 - [Installation](#installation)
 - [Configure Postman Frontend Plugin for Backstage](#configure-postman-frontend-plugin-for-backstage)
@@ -60,7 +61,7 @@ Shows the health of your API as determined by the monitor in Postman. The monito
 
 For more details, refer to [this section](#monitors-use-monitor-id-or-name).
 
-## Add Postman Collections and APIs dynamically to the catalog using Postman Tags
+## Catalog APIs using Postman Tags
 
 You can also use this plugin to fetch **Postman APIs** or **collections** dynamically using Postman tags. Please refer to [this section](#configuring-the-postman-entity-provider-optional) for more details.
 
