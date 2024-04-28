@@ -35,8 +35,6 @@ This plugin is not officially supported by Postman and is intended for Backstage
 
 This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allows you to view your Postman monitor results on the API page.
 
-You can also use this plugin to fetch **Postman APIs** or **collections** dynamically using Postman tags. Please refer to [this section](#configuring-the-postman-entity-provider-optional) for more details.
-
 ## API View 
 
 Displays your published Postman API data in Backstage, allowing you to access both the API information and the published API collections.
@@ -60,6 +58,13 @@ Shows the health of your API as determined by the monitor in Postman. The monito
 ![Postman Monitor View](assets/monitor.png)
 
 For more details, refer to [this section](#monitors-use-monitor-id-or-name).
+
+## Add Postman Collections and APIs dynamically to the catalog using Postman Tags
+
+You can also use this plugin to fetch **Postman APIs** or **collections** dynamically using Postman tags. Please refer to [this section](#configuring-the-postman-entity-provider-optional) for more details.
+
+![Postman Entity Provider populating APIs and collections directly from Postman using tags](https://github.com/postman-solutions-eng/backstage-postman-plugin/assets/1872314/9dfb1f9a-a092-4771-b82b-a2e622f8c05d)
+
 
 ## Coming soon 
 
