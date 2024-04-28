@@ -113,53 +113,6 @@ const apiPage = (
 
 3. Edit your `entities.yaml` file and add the [Postman metadata](#postman-metadata-guide) to display the different views that this plugin offers. More information about the metadata object can be found [here](#postman-metadata-guide).
 
-## Configuring the Postman Entity Provider (optional)
-
-The Postman EntityProvider is an optional component that allows you to dynamically retrieve Postman APIs and collections that have been tagged with a certain Postman tag, e.g. `backstage`.
-In order for it to work, you would need to add some more properties to your local `app-config.yaml` or production `app-config.production.yaml` file:
-
-```yaml
-postman:
-    baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
-    synchEntitiesWithTag: TAG_NAME
-    entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
-```
-
-Additionally, you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
-
-``` ts
-...
-// new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
-...
-
-...
-    const builder = CatalogBuilder.create(env);
-    
-    // new code after builder got instantiated
-    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger})
-    const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
-    builder.addEntityProvider(postmanEntityProvider);
-
-...
-
-...
-    await processingEngine.start();
-
-    // new code after processing engine started
-    await env.scheduler.scheduleTask({
-      id: 'run_postman_entity_provider_refresh',
-      fn: async () => {
-        await postmanEntityProvider.run();
-      },
-      frequency: { minutes: postmanEntityProviderSynchInterval },
-      timeout: { minutes: 10 },
-    });
-...
-```
-
 ## Postman Metadata Guide
 
 ### Metadata Object Overview
@@ -370,7 +323,7 @@ export default async function createPlugin({
 }
 ```
 
-5. Next, let's wire this into the overall backend router, edit `packages/backend/src/index.ts`:
+2. Next, let's wire this into the overall backend router, edit `packages/backend/src/index.ts`:
 
 ```ts
 import postmanbackend from './plugins/postmanbackend';
@@ -386,7 +339,54 @@ async function main() {
 }
 ```
 
-6. (optional), you can run `yarn start-backend` from the root directory to start the backend server
+3. (optional), you can run `yarn start-backend` from the root directory to start the backend server
+
+## Configuring the Postman Entity Provider (optional)
+
+The Postman EntityProvider is an optional component that allows you to dynamically retrieve Postman APIs and collections that have been tagged with a certain Postman tag, e.g. `backstage`.
+In order for it to work, you would need to add some more properties to your local `app-config.yaml` or production `app-config.production.yaml` file:
+
+```yaml
+postman:
+    baseUrl: https://api.postman.com
+    apiKey: 
+        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
+    synchEntitiesWithTag: TAG_NAME
+    entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
+```
+
+Additionally, you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
+
+``` ts
+...
+// new code after other imports
+import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
+...
+
+...
+    const builder = CatalogBuilder.create(env);
+    
+    // new code after builder got instantiated
+    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger})
+    const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
+    builder.addEntityProvider(postmanEntityProvider);
+
+...
+
+...
+    await processingEngine.start();
+
+    // new code after processing engine started
+    await env.scheduler.scheduleTask({
+      id: 'run_postman_entity_provider_refresh',
+      fn: async () => {
+        await postmanEntityProvider.run();
+      },
+      frequency: { minutes: postmanEntityProviderSynchInterval },
+      timeout: { minutes: 10 },
+    });
+...
+```
 
 ## License
 
