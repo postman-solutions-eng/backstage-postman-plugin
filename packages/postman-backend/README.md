@@ -3,7 +3,7 @@
 This `postman-backend` plugin provides some Postman services that will be used by the Postman frontend plugin to render the different component views.
 
 ## Disclaimer
-This plugin is not officially supported by Postman and is intended for Backstage users to easily integrate Postman into their API documentation.
+This plugin is not officially supported by Postman and is intended for Backstage users to integrate Postman into their API documentation easily.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ This guide provides instructions for configuring your application to interact wi
 **API Key Setup**: First, include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file.
 
 > [!CAUTION]
-> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user that has access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
+> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
 ```yaml
     postman:
@@ -38,10 +38,10 @@ This guide provides instructions for configuring your application to interact wi
     | Parameter | Schema Type | Optional | Description |
     | --------- | ----------- | -------- | ----------- |
     | `postman/team` | string | Yes | Name of your Postman team. For a team URL like `https://myteam.postman.co`, your team name would be `myteam.postman.co`. |
-    | `postman/owner` | string | Yes | Owner of the API assets. Default is "postman". Consider creating a User or Group for this owner. |
+    | `postman/owner` | string | Yes | Owner of the API assets. The default is "postman". Consider creating a User or Group for this owner. |
     | `postman/synchEntitiesWithTag` | string | Yes | Postman tag used to fetch API assets. |
     | `postman/entityProviderSynchInterval` | string | Yes | Interval (in hours) for fetching the API assets from Postman. |
-    | `postman/system` | string | Yes | System of the API assets. Default is "main". |
+    | `postman/system` | string | Yes | System of the API assets. The default is "main". |
 
     Example configuration:
 
@@ -60,7 +60,7 @@ This guide provides instructions for configuring your application to interact wi
 
     | Parameter | Schema Type | Optional | Description |
     | --------- | ----------- | -------- | ----------- |
-    | `postman/cache/ttl` | number | Yes | Cache expiry time in milliseconds. Default is 600000 (10 minutes). |
+    | `postman/cache/ttl` | number | Yes | Cache expiry time in milliseconds. The default is 600000 (10 minutes). |
 
     Example configuration for a custom cache duration:
 
@@ -73,11 +73,11 @@ This guide provides instructions for configuring your application to interact wi
           ttl: 300000  # 5 minutes
     ```
 
-If you do not like to apply caching / get quicker updates when new entities get tagged, set a ttl to 0 or a value smaller than the entity service refresh interval.
+If you prefer not to utilise caching and always get the latest information from Postman, you can set the TTL value to 0 or any value smaller than the interval at which the entity service refreshes.
 
 ### Add the backend plugin to your Backstage application 
 
-1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts`, and add the following to it:
+1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts` and add the following to it:
 
 ```ts
 import { Router } from 'express';
@@ -108,7 +108,7 @@ async function main() {
 }
 ```
 
-3. (optional), you can run `yarn start-backend` from the root directory to start the backend server
+3. (optional) you can run `yarn start-backend` from the root directory to start the backend server
 
 ## Configuring the Postman Entity Provider (optional)
 
