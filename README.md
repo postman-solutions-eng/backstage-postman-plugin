@@ -321,9 +321,8 @@ If you do not like to apply caching / get quicker updates when new entities get 
 1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts`, and add the following to it:
 
 ```ts
-import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { createRouter } from '@postman-solutions/backstage-plugin-postman-backend';
+import { createRouter } from '@postman-solutions/postman-backstage-backend-plugin';
 
 export default async function createPlugin({
   logger,
