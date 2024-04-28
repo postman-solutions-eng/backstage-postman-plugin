@@ -1,5 +1,5 @@
 {
-  "name": "@postman-solutions/backstage-plugin-postman",
+  "name": "@postman-solutions/postman-backstage-plugin",
   "version": "1.0.5",
   "main": "dist/index.esm.js",
   "types": "dist/index.d.ts",

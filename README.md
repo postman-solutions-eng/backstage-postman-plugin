@@ -76,7 +76,7 @@ A *Governance Checks* view will be added in future versions of this plugin.
 
 ```sh
 # From your Backstage root directory
-yarn --cwd packages/app add @postman-solutions/backstage-plugin-postman
+yarn --cwd packages/app add @postman-solutions/postman-backstage-plugin
 yarn --cwd packages/backend add @postman-solutions/postman-backstage-backend-plugin
 ```
 
@@ -114,7 +114,7 @@ To get a Postman API Key, follow the instructions [here](https://learning.postma
 
 ``` ts
 // ... other imports here
-import { PostmanCard } from '@postman-solutions/backstage-plugin-postman';
+import { PostmanCard } from '@postman-solutions/postman-backstage-plugin';
 // ... other components
 const apiPage = (
   <EntityLayout>

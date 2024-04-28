@@ -82,7 +82,7 @@ If you prefer not to utilise caching and always get the latest information from 
 ```ts
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { createRouter } from '@postman-solutions/backstage-plugin-postman-backend';
+import { createRouter } from '@postman-solutions/postman-backstage-plugin-backend';
 
 export default async function createPlugin({
   logger,
@@ -129,7 +129,7 @@ Additionally, you would need to insert the following lines into your `packages/b
 ``` ts
 ...
 // new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
+import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-plugin-backend';
 ...
 
 ...

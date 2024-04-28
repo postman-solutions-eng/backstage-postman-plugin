@@ -20,7 +20,7 @@ Refer to the installation steps for the backend plugin [here](https://github.com
 
 ``` ts
 // ... other imports here
-import { PostmanCard } from '@postman-solutions/backstage-plugin-postman';
+import { PostmanCard } from '@postman-solutions/postman-backstage-plugin';
 // ... other components
 const apiPage = (
   <EntityLayout>
@@ -58,7 +58,7 @@ Additionally, you would need to insert the following lines into your `packages/b
 ``` ts
 ...
 // new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/backstage-plugin-postman-backend';
+import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-plugin-backend';
 ...
 
 ...
