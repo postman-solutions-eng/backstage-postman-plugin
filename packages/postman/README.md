@@ -1,15 +1,16 @@
 # Postman Plugin for Backstage
 
-The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs, and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
+The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
 
 It is a community-driven initiative to extend Backstage functionalities with Postman.
 
 ## Disclaimer
-This plugin is not officially supported by Postman and is intended for Backstage users to easily integrate Postman into their API documentation.
+This plugin is not officially supported by Postman and is intended for Backstage users to integrate Postman into their API documentation easily.
 
 ## Dependencies
 
-*Important:* Please note that the frontend plugin will not function without the backend plugin.
+> [!IMPORTANT]
+> Please note that the frontend plugin will not function without the backend plugin.
 
 Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation).
 
