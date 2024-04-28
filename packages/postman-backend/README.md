@@ -1,6 +1,6 @@
 # Postman Backend Plugin for Backstage
 
-This `postman-backend` plugin provides some Postman services that will be used by the Postman frontebd plugin to render the different component views.
+This `postman-backend` plugin provides some Postman services that will be used by the Postman frontend plugin to render the different component views.
 
 ## Disclaimer
 This plugin is not officially supported by Postman and is intended for Backstage users to easily integrate Postman into their API documentation.
