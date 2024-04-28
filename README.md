@@ -98,7 +98,7 @@ postman:
     apiKey: ${YOUR_API_KEY_HERE}
 ```
 
-To get a Postman API Key, follow the instructions [here](https://learning.postman.com/docs/developer/postman-api/make-postman-api-call/#get-your-api-key). The API Key should ideally have super admin rights and be created against a service account as opposed to an individual account.
+To get a Postman API Key, follow the instructions [here](https://learning.postman.com/docs/developer/postman-api/make-postman-api-call/#get-your-api-key).
 
 2. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page. 
 
