@@ -1,0 +1,48 @@
+# This is a Backstage template for creating APIs with Postman metadata
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: api-creation-postman-template
+  title: API Creation with Postman Metadata
+  description: Template for creating APIs with integrated Postman metadata for easy monitoring and testing.
+spec:
+  owner: team-postman
+  type: service
+
+  parameters:
+    - title: API Information
+      required:
+        - name
+        - workspaceId
+        - repositoryUrl
+      properties:
+        name:
+          title: API Name
+          type: string
+          description: Unique name for the API
+        workspaceId:
+          title: Postman Workspace ID
+          type: string
+          description: The ID of the Postman workspace where the API is located
+        repositoryUrl:
+          title: Repository URL
+          type: string
+          description: The URL of the GitHub/GitLab repository associated with this API
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: ./base-template.yaml
+
+    - id: setup-postman
+      name: Setup Postman Metadata
+      action: fetch:plain
+      input:
+        # Add instructions for setting up Postman metadata here
+
+  output:
+    # Define outputs that include Postman metadata here
+
+# Note: Replace the placeholders with actual values when using this template.
