@@ -31,7 +31,7 @@ This plugin is designed to integrate Postman functionality into your Backstage a
 
 # Disclaimer and Plugin Compatibility
 These backstage plugins are not officially supported by Postman and are intended for Backstage users to integrate Postman into their API documentation easily.
-They have been successfully tested with Backstage v1.22, v1.23 and 1.25. Please file an issue if you are using a newer version of Backstage so that we can recommend how to integrate best under those circumstances.
+They have been successfully tested with Backstage v1.22, v1.23 and 1.28. Please file an issue if you are using a newer version of Backstage so that we can recommend how to integrate best under those circumstances.
 
 # Plugin Features
 
