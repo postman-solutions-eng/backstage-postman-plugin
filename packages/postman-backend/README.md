@@ -75,12 +75,96 @@ This guide provides instructions for configuring your application to interact wi
 
 If you prefer not to utilise caching and always get the latest information from Postman, you can set the TTL value to 0 or any value smaller than the interval at which the entity service refreshes.
 
-### Add the backend plugin to your Backstage application 
+### Add the backend plugin to your Backstage application (newer Backstage versions >= v1.24)
 
-1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts` and add the following to it:
+1. Modify file `packages/backend/src/index.ts`, and add the following to it:
 
 ```ts
-import { Router } from 'express';
+...
+
+import { createBackend } from '@backstage/backend-defaults';
+
+// new code after other imports
+import { loggerToWinstonLogger, CacheManager } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendPlugin,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { PostmanEntityProvider, createRouter as postmanRouter } from '@postman-solutions/postman-backstage-backend-plugin';
+
+const backend = createBackend();
+...
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+
+// new code after all other plugins have been added to backend
+
+backend.add(createBackendPlugin({
+  pluginId: 'postman',
+  register(env) {
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        httpRouter: coreServices.httpRouter,
+      },
+      async init({ config, logger, httpRouter }) {
+        
+        const legacyLogger = loggerToWinstonLogger(logger);
+        httpRouter.use(await postmanRouter({ config, logger: legacyLogger }));
+        httpRouter.addAuthPolicy({
+          path: '/:id',
+          allow: 'unauthenticated',
+        })
+      },
+    });
+  },
+}));
+
+// optional for the entity service
+const postmanEntityServiceModule = createBackendModule({
+  pluginId: 'catalog', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
+      },
+      async init({ catalog, config, logger, scheduler}) {
+        const cacheManager = CacheManager.fromConfig(config);
+        const cache = cacheManager.forPlugin('postman').getClient({defaultTtl: config?.getNumber('postman.cache.ttl') ?? 60000 })
+        const postmanEntityProvider = PostmanEntityProvider.fromConfig(config, {logger: logger, cache})
+        const postmanEntityProviderSynchInterval = config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
+        catalog.addEntityProvider(postmanEntityProvider);
+
+        await scheduler.scheduleTask({
+          id: 'run_postman_entity_provider_refresh',
+          fn: async () => {
+            await postmanEntityProvider.run();
+          },
+          frequency: { minutes: postmanEntityProviderSynchInterval },
+          timeout: { minutes: 10 },
+        });
+
+      },
+    });
+  },
+});
+backend.add(postmanEntityServiceModule);
+
+backend.start();
+```
+
+
+### Add the backend plugin to your Backstage application (older Backstage versions < 1.24)
+
+1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts`, and add the following to it:
+
+```ts
 import { PluginEnvironment } from '../types';
 import { createRouter } from '@postman-solutions/postman-backstage-backend-plugin';
 
@@ -118,25 +202,27 @@ In order for it to work, you would need to add some more properties to your loca
 ```yaml
 postman:
     baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
+    apiKey: ${POSTMAN_API_KEY}
     synchEntitiesWithTag: TAG_NAME
     entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
 ```
 
-Additionally, you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
+Additionally, if you are using an older version of Backstage ( < 1.24) you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
 
 ``` ts
 ...
 // new code after other imports
 import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-backend-plugin';
+import { CacheManager } from '@backstage/backend-common';
 ...
 
 ...
     const builder = CatalogBuilder.create(env);
     
     // new code after builder got instantiated
-    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger})
+    const cacheManager = CacheManager.fromConfig(env.config);
+    const cache = cacheManager.forPlugin('postman').getClient({defaultTtl: env.config?.getNumber('postman.cache.ttl') ?? 60000 })
+    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger, cache})
     const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
     builder.addEntityProvider(postmanEntityProvider);
 
@@ -156,3 +242,5 @@ import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-back
     });
 ...
 ```
+
+For newer versions of Backstage (v1.24+), we included the entity service initialization code in our modifications for `packages/backend/src/index.ts`.
