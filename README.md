@@ -21,6 +21,7 @@ This plugin is designed to integrate Postman functionality into your Backstage a
       - [Basic Configuration](#basic-configuration)
       - [Advanced Configuration](#advanced-configuration)
   - [Configuring the Postman Entity Provider (optional)](#configuring-the-postman-entity-provider-optional)
+- [Configure Backend Content Security Policy to display embedded pictures (optional)](configure-backend-content-security-policy-to-display-embedded-pictures-optional)
 - [Postman Metadata Guide](#postman-metadata-guide)
   - [Metadata Object Overview](#metadata-object-overview)
   - [Common Parameters](#common-parameters)
@@ -287,6 +288,28 @@ import { CacheManager } from '@backstage/backend-common';
     });
 ...
 ```
+
+# Configure Backend Content Security Policy to display embedded pictures (optional)
+
+If your Postman API docs contain embedded pictures like this one
+
+![image](https://github.com/postman-solutions-eng/backstage-postman-plugin/assets/1872314/70cd575c-f84d-4729-8fe0-e7b7c3084142)
+
+you would need to include the potential image sources into the **backend** section of your `app-config.production.yaml`:
+
+```yaml
+backend:
+  csp:
+    img-src:
+      # "'self'" and 'data' are from the backstage default but must be set since img-src is overwritten
+      - "'self'"
+      - 'data:'
+      - https://content.pstmn.io
+      - https://i.imgur.com
+      - https://avatars.githubusercontent.com
+```
+
+
 
 # Postman Metadata Guide
 
