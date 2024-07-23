@@ -29,6 +29,22 @@ This plugin is designed to integrate Postman functionality into your Backstage a
   - [Collections (Use collection tag or IDs)](#collections-use-collection-tag-or-ids)
   - [Monitors (Use monitor ID or name)](#monitors-use-monitor-id-or-name)
 
+## New Backstage Template for Postman Integration
+
+To streamline the process of integrating Postman with Backstage, we have introduced a new Backstage template named `api-creation-postman-template.yaml`. This template simplifies the setup process by providing a pre-configured structure for adding Postman metadata to your Backstage entities.
+
+### How to Use the Template
+
+To use the `api-creation-postman-template.yaml` template, follow these steps:
+
+1. Ensure the template file is located in your repository's `templates` directory.
+2. When creating a new API entity in Backstage, select the `api-creation-postman-template.yaml` from the list of available templates.
+3. Fill in the required fields, such as API name, workspace ID, and repository URL. The template includes comments to guide you through this process.
+4. Once the entity is created, the Postman metadata will be automatically integrated, allowing for seamless interaction with Postman resources directly from Backstage.
+
+For more information and to view the template, please refer to the [api-creation-postman-template.yaml](templates/api-creation-postman-template.yaml) file in the repository.
+
+This new template aims to make the integration of Postman metadata into Backstage entities as straightforward as possible, reducing the manual effort required and ensuring a consistent approach across your Backstage instance.
 
 # Disclaimer and Plugin Compatibility
 These backstage plugins are not officially supported by Postman and are intended for Backstage users to integrate Postman into their API documentation easily.

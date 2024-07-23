@@ -1,0 +1,69 @@
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: api-creation-postman-template
+  title: Postman API Creation
+  description: Template for creating APIs with Postman metadata in Backstage
+spec:
+  owner: team-postman
+  type: service
+
+  parameters:
+    - title: API Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the API
+        description:
+          title: Description
+          type: string
+          description: Description of the API
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the API (team or individual)
+
+    - title: Postman Metadata
+      required:
+        - apiId
+        - collectionId
+        - monitorId
+      properties:
+        apiId:
+          title: API ID
+          type: string
+          description: The ID of the API in Postman
+        collectionId:
+          title: Collection ID
+          type: string
+          description: The ID of the Postman collection associated with this API
+        monitorId:
+          title: Monitor ID
+          type: string
+          description: The ID of the Postman monitor associated with this API
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: ./template.yaml
+        values:
+          name: '{{ parameters.name }}'
+          description: '{{ parameters.description }}'
+          owner: '{{ parameters.owner }}'
+          apiId: '{{ parameters.apiId }}'
+          collectionId: '{{ parameters.collectionId }}'
+          monitorId: '{{ parameters.monitorId }}'
+
+    - id: register
+      name: Register the API in Backstage
+      action: catalog:register
+      input:
+        repoContentsUrl: '{{ parameters.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
