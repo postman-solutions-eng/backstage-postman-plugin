@@ -13,6 +13,7 @@ This plugin is designed to integrate Postman functionality into your Backstage a
   - [Monitor View](#monitor-view)
   - [Catalog APIs using Postman Tags](#catalog-apis-using-postman-tags)
   - [Coming soon](#coming-soon)
+- [Run it locally as a demo](#run-it-locally-as-a-demo)
 - [Installation](#installation)
 - [Configure Postman Frontend Plugin for Backstage](#configure-postman-frontend-plugin-for-backstage)
 - [Configure Postman Backend Plugin for Backstage](#configure-postman-backend-plugin-for-backstage)
@@ -72,6 +73,15 @@ You can also use this plugin to dynamically fetch **Postman APIs** or **collecti
 ## Coming soon 
 
 A *Governance Checks* view will be added in future versions of this plugin.
+We are also planning to surface creator and last modified user as an optional entity provider.
+
+## Run it locally as a demo
+
+If you like to get a feeling how this plugin behaves in a preconfigured backstage instance, run a [demo docker image](https://github.com/postman-solutions-eng/backstage-postman-plugin/pkgs/container/backstage-postman-plugin) locally. Please adjust the `-e` environment parameters to your Postman org (see 👇 for their meaning).
+
+```sh
+docker run -p 3000:3000 -e POSTMAN_SYNCH_TAG=backstage -e BACKSTAGE_ORG_NAME="Postman Backstage Demo"  -e APP_BASE_URL=http://localhost/ -e POSTMAN_API_BASE_URL=https://api.postman.com -e POSTMAN_API_KEY=PMAK-yourkey -e POSTMAN_TEAM_DOMAIN=yourdomain-without-http-prefix.postman.co -e PORT=3000 --rm -it --platform linux/amd64 ghcr.io/postman-solutions-eng/backstage-postman-plugin:1.0.5-sqlite 
+```
 
 # Installation
 
