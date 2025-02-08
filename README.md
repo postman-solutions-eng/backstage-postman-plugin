@@ -82,6 +82,7 @@ If you like to get a feeling how this plugin behaves in a preconfigured backstag
 ```sh
 docker run -p 3000:3000 -e POSTMAN_SYNCH_TAG=backstage -e BACKSTAGE_ORG_NAME="Postman Backstage Demo"  -e APP_BASE_URL=http://localhost/ -e POSTMAN_API_BASE_URL=https://api.postman.com -e POSTMAN_API_KEY=PMAK-yourkey -e POSTMAN_TEAM_DOMAIN=yourdomain-without-http-prefix.postman.co -e PORT=3000 --rm -it --platform linux/amd64 ghcr.io/postman-solutions-eng/backstage-postman-plugin:1.0.5-sqlite 
 ```
+**Attention** Please note that this demo setup should not be used for ANY production purpose or with production data. Implementation in production will still require installation of the plugin in a customers Backstage instance(s) as described 👇.
 
 # Installation
 
