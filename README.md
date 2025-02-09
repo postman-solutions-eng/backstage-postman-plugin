@@ -15,11 +15,11 @@ consists of two complementary parts:
 
 - [Disclaimer & Compatibility](#disclaimer--compatibility)
 - [Plugin Features](#plugin-features)
-  - [API View](#api-view)
   - [Collections View](#collections-view)
-  - [Collection Linker](#collection-linker)
+  - [Collection Linker](#collection-linker-new)
   - [Catalog APIs using Postman Tags](#catalog-apis-using-postman-tags)
   - [Monitor View](#monitor-view)
+  - [API View](#api-view)
 - [Installation](#installation)
 - [Configure Postman Frontend Plugin](#configure-postman-frontend-plugin)
   - [Optional Configuration](#optional-configuration)
@@ -28,9 +28,9 @@ consists of two complementary parts:
 - [Postman Metadata Guide](#postman-metadata-guide)
   - [Overview](#overview)
   - [Common Parameters](#common-parameters)
-  - [APIs](#apis)
   - [Collections](#collections)
   - [Monitors](#monitors)
+  - [APIs](#apis)
 - [License, Contributing & Contact](#license-contributing--contact)
 
 # Disclaimer & Compatibility
