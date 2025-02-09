@@ -51,7 +51,7 @@ details with older Backstage versions.
 - Use the Collection Linker to dynamically attach Postman collections to your
   APIs.
 
-### Collections View
+## Collections View
 
 Shows collections associated with an API, including a _Run in Postman_ button
 that uses collection IDs or tags defined in `entities.yaml`.
@@ -65,7 +65,7 @@ that uses collection IDs or tags defined in `entities.yaml`.
 
 _For parameter details, see [Postman Metadata Guide](#postman-metadata-guide)._
 
-### Collection Linker [NEW]
+## Collection Linker [NEW]
 
 The Collection Linker feature lets you dynamically attach one or more Postman
 collections to an API. When linked, collections are automatically tagged using
@@ -113,7 +113,7 @@ postman:
 
 _For more information, see [Postman Metadata Guide](#collection-linker)._
 
-### Catalog APIs using Postman Tags
+## Catalog APIs using Postman Tags
 
 Easily fetch and populate your Backstage API catalog with Postman APIs and
 collections from your Postman team using the Postman **EntityProvider**, which
@@ -124,7 +124,7 @@ relies on Postman tags.
 In this example, our entity provider fetches all assets tagged with
 `backstage-plugin` from Postman.
 
-### Monitor View
+## Monitor View
 
 Presents API health based on Postman monitor data. The monitor can be configured
 using its `name` or `id`.
@@ -133,7 +133,7 @@ using its `name` or `id`.
 
 _For more information, see [Postman Metadata Guide](#postman-metadata-guide)._
 
-### API View
+## API View
 
 Displays your published Postman API data in Backstage, allowing you to access
 both API details and related collections.
@@ -165,6 +165,7 @@ postman:
   baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
   apiKey: ADD_YOUR_POSTMAN_API_KEY
 ```
+
 > [!CAUTION]
 > The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
@@ -196,7 +197,7 @@ import { PostmanCard } from "@postman-solutions/postman-backstage-plugin";
 // ...existing code...
 ```
 
-### Optional Configuration
+## Optional Configuration
 
 You can set a maximum height for the collection and API views using the
 following options:
@@ -249,6 +250,17 @@ This plugin exposes various endpoints, including:
   - GET `/workspaces`
   - GET `/workspace/:workspaceId`
 
+## Configuration
+
+In your backend module (usually `packages/backend/src/index.ts`), add the Postman backend plugin as follows:
+
+```typescript
+// ...existing imports...
+backend.add(import('@postman-solutions/postman-backstage-backend-plugin'));
+// ...existing imports...
+backend.start();
+```
+
 ## Caching
 
 The backend plugin provides caching to reduce redundant HTTP requests and boost
@@ -289,7 +301,7 @@ postman:
     synchEntitiesWithTag: backstage-plugin # Tag used to fetch collections and APIs from Postman
     synchInterval: 2 # Synchronization interval in minutes
   cache:
-    ttl: 60000 # Cache TTL in seconds. Default 600 seconds
+    ttl: 60000 # Cache TTL in seconds. Default 600 seconds. Default 600 milliseconds
 ```
 
 2. In your backend module (usually `packages/backend/src/index.ts`), register
@@ -376,15 +388,15 @@ backend:
       - https://avatars.githubusercontent.com
 ```
 
-## Postman Metadata Guide
+# Postman Metadata Guide
 
-### Overview
+## Overview
 
 This guide details the metadata required for the Postman plugin. Use this
 metadata only for entities with `kind: API` in your YAML file. The options for
 API, Collections, and Monitor views can be combined.
 
-### Common Parameters
+## Common Parameters
 
 | Parameter              | Schema Type | Optional | Description                                                                                                                          |
 | ---------------------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -398,7 +410,7 @@ metadata:
   postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
 ```
 
-### Collections
+## Collections
 
 | Parameter                 | Schema Type | Optional | Description                                          |
 | ------------------------- | ----------- | -------- | ---------------------------------------------------- |
@@ -406,7 +418,7 @@ metadata:
 | `postman/collections/ids` | array       | Yes      | An array of Postman collection IDs.                  |
 | `postman/collections/tag` | string      | Yes      | A tag to retrieve corresponding Postman collections. |
 
-#### Get collection by ID
+### Get collection by ID
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -416,7 +428,7 @@ metadata:
   postman/collection/id: "YOUR_COLLECTION_ID"
 ```
 
-#### Using collection tag
+### Using collection tag
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -426,7 +438,7 @@ metadata:
   postman/collections/tag: "YOUR_COLLECTION_TAG_HERE"
 ```
 
-#### Using collection IDs
+### Using collection IDs
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -458,14 +470,14 @@ postman:
     workspaceVisibility: "public"
 ```
 
-### Monitors
+## Monitors
 
 | Parameter              | Schema Type | Optional | Description               |
 | ---------------------- | ----------- | -------- | ------------------------- |
 | `postman/monitor/id`   | string      | No       | The Postman monitor ID.   |
 | `postman/monitor/name` | string      | No       | The Postman monitor name. |
 
-#### Using monitor id
+### Using monitor id
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -476,7 +488,7 @@ metadata:
   postman/monitor/id: "YOUR_MONITOR_ID_HERE"
 ```
 
-#### Using monitor name
+### Using monitor name
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -486,13 +498,13 @@ metadata:
   postman/monitor/name: "YOUR_MONITOR_NAME_HERE"
 ```
 
-### APIs
+## APIs
 
 | Parameter        | Schema Type | Optional | Description         |
 | ---------------- | ----------- | -------- | ------------------- |
 | `postman/api/id` | string      | No       | The Postman API ID. |
 
-#### Using the API ID
+### Using the API ID
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
