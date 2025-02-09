@@ -76,7 +76,6 @@ export class PostmanService {
     }
   };
 
-
   // Function to make a GET request to fetch collections by tags from the Postman API
   async getPostmanCollectionsByTag(tag: string) {
     try {
@@ -86,6 +85,28 @@ export class PostmanService {
       throw new Error(this.errorCatcher(error));
     }
   };
+
+  // Function to make a GET request to fetch all the tags of a collection
+  async getPostmanCollectionTags(id: string) {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/collections/${id}/tags`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  };
+
+  // Function to make a PUT request to update the tags of a collection
+  async setCollectionTags(id: string, tags: any): Promise<string[]> {
+    try {
+      const response = await axios.put(`${this.baseUrl}/api/postman/collections/${id}/tags`, {
+        data: tags
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  }
 
   // Function to make a GET request to fetch the API monitor data from the Postman API
   async getPostmanAPIMonitorData(id: string) {
@@ -106,5 +127,55 @@ export class PostmanService {
       throw new Error(this.errorCatcher(error));
     }
   };
+
+  // Function to make a GET request to fetch all Postman users in team
+  async getAllPostmanUsers() {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/users`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  };
+
+  // Function to make a GET request to fetch all workspaces of a given Postman team
+  async getAllPostmanWorkspaces() {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/workspaces`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  };
+
+  // Function to make a GET request to fetch a given workspace
+  async getPostmanWorkspace(workspaceId: string) {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/workspaces/${workspaceId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  };
+
+  // Function to make a GET request to fetch all Postman collections in team
+  async getAllPostmanCollections(workspaceId: string) {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/collections?workspace=${workspaceId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  };
+
+  // Function to make a GET request to fetch the collection linker status from the app-config
+  async getCollectionLinkerStatus() {
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/postman/collectionlinker/status`);
+      return response.data;
+    } catch (error) {
+      throw new Error(this.errorCatcher(error));
+    }
+  }
 
 }

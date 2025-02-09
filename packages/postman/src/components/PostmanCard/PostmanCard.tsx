@@ -7,7 +7,7 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BottomLink, InfoCard, MarkdownContent } from '@backstage/core-components';
 
 // Postman icon
-import postmanIcon from './../../assets/postman.svg';
+import postmanIcon from './../../../assets/postman-icon.svg';
 
 // Material UI Components
 import Alert from '@mui/material/Alert';
@@ -22,6 +22,7 @@ import { PostmanService } from '../../service/PostmanServices';
 import CollectionsView from './sub-components/CollectionsView';
 import MonitorView from './sub-components/MonitorView';
 import APIView from './sub-components/APIView';
+import CollectionsLinker from './sub-components/CollectionsLinker';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export function PostmanCard({ height }: { height?: number }) {
+export function PostmanCard({ height, collectionContentHeight, APIContentHeight }: { height?: number, collectionContentHeight?: number, APIContentHeight?: number }) {
 
   const config = useApi(configApiRef);
   const baseUrl = config.getString('backend.baseUrl');
@@ -46,6 +47,7 @@ export function PostmanCard({ height }: { height?: number }) {
 
   // State management
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<any[]>([]);
   const [APIHealth, setAPIHealth] = useState<any>(null);
   const [collections, setCollections] = useState<any[]>([]);
   const [postmanAPIData, setPostmanAPIData] = useState<any>();
@@ -62,6 +64,10 @@ export function PostmanCard({ height }: { height?: number }) {
       try {
         const PostmanServiceInstance = new PostmanService(baseUrl);
         const context = processPostmanMetadata(entity.metadata);
+
+        const _users: any = await PostmanServiceInstance.getAllPostmanUsers();
+        setUsers(_users);
+
         if (context?.postman?.api?.id) {
           const data = await PostmanServiceInstance.getPostmanAPIData(context.postman.api.id);
 
@@ -153,9 +159,7 @@ export function PostmanCard({ height }: { height?: number }) {
       <Typography style={{ display: 'inline-flex', margin: '16px 16px 0' }} gutterBottom variant="h5" component="div">
         <img style={{ marginRight: '10px', width: '100%', height: '35px' }} alt='Postman Logo' src={postmanIcon} />
       </Typography>
-      <CardContent style={{
-        ...height && { height: `${height}px`, overflowY: 'scroll' },
-      }}>
+      <CardContent style={{ ...height && { height: height, overflowY: 'auto' } }}>
         {postmanContext.postman && !_error.state ? (
           <>
             {loading ? (
@@ -172,12 +176,12 @@ export function PostmanCard({ height }: { height?: number }) {
                 )}
                 {postmanContext?.postman?.api?.id && (
                   <>
-                    <APIView postmanContext={{ ...postmanContext, postmanAPIData, collections }} />
+                    <APIView postmanContext={{ ...postmanContext, postmanAPIData, collections, users }} height={APIContentHeight || 'auto'} />
                   </>
                 )}
                 {!postmanContext.postman.api && postmanContext?.postman?.collections && (
                   <>
-                    <CollectionsView postmanContext={{ ...postmanContext, collections }} />
+                    <CollectionsView postmanContext={{ ...postmanContext, collections }} users={users} height={collectionContentHeight || 'auto'} updateCollections={(_collection, _message) => { }} />
                   </>
                 )}
               </>
@@ -190,14 +194,15 @@ export function PostmanCard({ height }: { height?: number }) {
           </>
         ) : (
           <>
-
-            <Alert sx={{ mt: 2 }} severity='error'>
-              {_error.state ? (
+            {_error.state ? (
+              <Alert sx={{ mt: 2 }} severity='error'>
                 <MarkdownContent content={_error.message} />
-              ) : (
-                "This API asset doesn't exist in Postman, or your API may lack the necessary Postman metadata."
-              )}
-            </Alert>
+              </Alert>
+            ) : (
+              <>
+                <CollectionsLinker backstageAPIContext={entity} postmanContext={{ ...postmanContext, collections }} users={users} height={collectionContentHeight || 'auto'} />
+              </>
+            )}
           </>
         )}
       </CardContent>
@@ -225,7 +230,7 @@ function processPostmanMetadata(metadata: EntityMeta): any {
   });
 
   postmanData.goUrl = metadata.annotations?.[ANNOTATION_VIEW_URL]?.split('/')[2] ?? 'go.postman.co';
-  
+
   if (!postmanData.goUrl.endsWith('.co')) {
     postmanData.goUrl = 'go.postman.co';
   }
