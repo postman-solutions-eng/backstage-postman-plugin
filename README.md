@@ -3,405 +3,396 @@
 </p>
 <h1 align="center">Postman Plugin For Backstage</h1>
 
-This plugin is designed to integrate Postman functionality into your Backstage application seamlessly. It simplifies the addition of a Postman card to your API views and enables dynamic retrieval of Postman resources like collections and APIs. Linking your APIs with Postman collections or APIs empowers consumers to interact effortlessly with these resources within the Postman interface. This includes features such as a `Run in Postman` button and the ability to dynamically fetch collections or APIs from Postman and add them to your API list using an `Entity Provider`.
+This plugin integrates Postman functionality into your Backstage application,
+enabling you to display API information, collections, and monitor data. It
+consists of two complementary parts:
+
+- A frontend plugin for displaying Postman cards on your API pages.
+- A backend plugin that proxies requests between your application and the
+  Postman API.
 
 # Table of Contents
-- [Disclaimer and Plugin Compatibility](#disclaimer-and-plugin-compatibility)
+
+- [Disclaimer & Compatibility](#disclaimer--compatibility)
 - [Plugin Features](#plugin-features)
-  - [API View](#api-view)
   - [Collections View](#collections-view)
-  - [Monitor View](#monitor-view)
+  - [Collection Linker](#collection-linker-new)
   - [Catalog APIs using Postman Tags](#catalog-apis-using-postman-tags)
-  - [Coming soon](#coming-soon)
+  - [Monitor View](#monitor-view)
+  - [API View](#api-view)
 - [Run it locally as a demo](#run-it-locally-as-a-demo)
 - [Installation](#installation)
-- [Configure Postman Frontend Plugin for Backstage](#configure-postman-frontend-plugin-for-backstage)
-- [Configure Postman Backend Plugin for Backstage](#configure-postman-backend-plugin-for-backstage)
-  - [Prerequisites](#prerequisites)
-  - [Configuration Guide](#configuration-guide)
-      - [Basic Configuration](#basic-configuration)
-      - [Advanced Configuration](#advanced-configuration)
-  - [Configuring the Postman Entity Provider (optional)](#configuring-the-postman-entity-provider-optional)
-- [Configure Backend Content Security Policy to display embedded pictures (optional)](configure-backend-content-security-policy-to-display-embedded-pictures-optional)
+- [Configure Postman Frontend Plugin](#configure-postman-frontend-plugin)
+  - [Optional Configuration](#optional-configuration)
+- [Configure Postman Backend Plugin](#configure-postman-backend-plugin)
+- [Backend Content Security Policy](#backend-content-security-policy)
 - [Postman Metadata Guide](#postman-metadata-guide)
-  - [Metadata Object Overview](#metadata-object-overview)
+  - [Overview](#overview)
   - [Common Parameters](#common-parameters)
+  - [Collections](#collections)
+  - [Monitors](#monitors)
   - [APIs](#apis)
-  - [Collections (Use collection tag or IDs)](#collections-use-collection-tag-or-ids)
-  - [Monitors (Use monitor ID or name)](#monitors-use-monitor-id-or-name)
+- [License, Contributing & Contact](#license-contributing--contact)
 
+# Disclaimer & Compatibility
 
-# Disclaimer and Plugin Compatibility
-These backstage plugins are not officially supported by Postman and are intended for Backstage users to integrate Postman into their API documentation easily.
-They have been successfully tested with Backstage v1.22, v1.23 and 1.28. Please file an issue if you are using a newer version of Backstage so that we can recommend how to integrate best under those circumstances.
+This plugin is community-driven and is not officially supported by Postman Inc.
+The latest release has been tested on Backstage v1.35+ and may not be compatible
+with older versions. Please refer to the plugin releases for compatibility
+details with older Backstage versions.
 
 # Plugin Features
 
-This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allow you to view your Postman monitor results on the API page.
+- Display one or multiple Postman collections on your API pages.
+- Display published APIs created in Postman along with their versions and
+  associated collections on your API pages.
+- Show Postman monitor health information.
+- Dynamically fetch Postman assets using tags (catalog integration using
+  EntityProvider).
+- Use the Collection Linker to dynamically attach Postman collections to your
+  APIs.
 
-## API View 
+## Collections View
 
-Displays your published Postman API data in Backstage, allowing you to access both the API information and the published API collections.
+Shows collections associated with an API, including a _Run in Postman_ button
+that uses collection IDs or tags defined in `entities.yaml`.
 
-![Postman API View](assets/api.png)
+- **Postman Backstage Demo Site**:
+  [Explore the Nova Security API](https://backstage.postmansolutions.com/catalog/default/api/nova-security-api)
+- **Postman Collection**:
+  [View the Nova Security User Management Collection in Postman](https://www.postman.com/technology-demo/postman-backstage-plugin-demo-resources/documentation/zr0gjtu/nova-security-user-management)
 
-Refer to the [Postman API Metadata](#APIs) for the parameters needed to display this view.
+![Postman Collection View](assets/collections.png)
 
-## Collections View 
+_For parameter details, see [Postman Metadata Guide](#postman-metadata-guide)._
 
-This view displays the collection(s) of a given API stored in Postman. It includes a *Run in Postman* button, which is activated based on the collection ID(s) or tag defined in the `entities.yaml` file.
+## Collection Linker [NEW]
 
-![Postman Collection View](assets/collection.png)
+The Collection Linker feature lets you dynamically attach one or more Postman
+collections to an API. When linked, collections are automatically tagged using
+the format `postman-plugin-{API_NAME}-tag`, allowing you to easily manage and
+update connections via the Postman Card. This option appears only for APIs that
+do not have existing Postman metadata defined.
 
-Refer to the [Postman Collections Metadata](#monitors-use-monitor-id-or-name) to see the parameters needed to display this view.
+> [!CAUTION]
+> The **Collection Linker** should _only_ be used if your Backstage application
+> is _authentication protected_. This feature is disabled by default. To enable
+> it, set the following flag in your `app-config.yaml` or
+> `app-config.production.yaml` file:
 
-## Monitor View 
+> ```yaml
+> postman:
+>   collectionLinker:
+>     enabled: true
+> ```
 
-This view shows the health of your API as determined by a Postman monitor. The monitor can be displayed using its `name` or `id`. 
+- **Postman Backstage Demo Site**:
+  [Test the Collection Linker Here](https://backstage.postmansolutions.com/catalog/default/api/empty-api)
 
-![Postman Monitor View](assets/monitor.png)
+![Postman Collection Linker](assets/collection-linker.gif)
 
-For more details, refer to [this section](#monitors-use-monitor-id-or-name).
+### Limiting Workspace Visibility
+
+By default, the _**Collection Linker**_ fetches data from team and public
+workspaces created in your Postman team. To change the visibility, set the
+`workspaceVisibility` flag in your `app-config.yaml` or
+`app-config.production.yaml` file:
+
+```yaml
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ADD_YOUR_POSTMAN_API_KEY
+  collectionLinker:
+    workspaceVisibility: "public"
+```
+
+> [!CAUTION]
+> We recommend using only 'team' or 'public' visibility to avoid exposing
+> sensitive data stored in private, partner, or personal workspaces. Enabling
+> other workspace types might expose workspaces that are not accessible to all
+> Backstage users, limiting the benefit of this feature.
+
+_For more information, see [Postman Metadata Guide](#collection-linker)._
 
 ## Catalog APIs using Postman Tags
 
-You can also use this plugin to dynamically fetch **Postman APIs** or **collections** using Postman tags. For more details, please refer to [this section](#configuring-the-postman-entity-provider-optional).
+Easily fetch and populate your Backstage API catalog with Postman APIs and
+collections from your Postman team using the Postman **EntityProvider**, which
+relies on Postman tags.
 
-![Postman Entity Provider populating APIs and collections directly from Postman using tags](https://github.com/postman-solutions-eng/backstage-postman-plugin/assets/1872314/9dfb1f9a-a092-4771-b82b-a2e622f8c05d)
+![Postman Catalog Integration](assets/entityprovider.png)
 
+In this example, our entity provider fetches all assets tagged with
+`backstage-plugin` from Postman.
 
-## Coming soon 
+## Monitor View
 
-A *Governance Checks* view will be added in future versions of this plugin.
-We are also planning to surface creator and last modified user as an optional entity provider.
+Presents API health based on Postman monitor data. The monitor can be configured
+using its `name` or `id`.
 
-## Run it locally as a demo
+![Postman Monitor View](assets/monitor.png)
+
+_For more information, see [Postman Metadata Guide](#postman-metadata-guide)._
+
+## API View
+
+Displays your published Postman API data in Backstage, allowing you to access
+both API details and related collections.
+
+- **Postman Backstage Demo Site**:
+  [Explore the Users API](https://backstage.postmansolutions.com/catalog/default/api/users-api)
+- **Postman API Builder**:
+  [View the Users API in Postman](https://www.postman.com/technology-demo/postman-backstage-plugin-demo-resources/api/96f32c87-9d6f-4578-b8ae-688cef1284ac?version=deda98eb-f163-4780-ba4b-acb11c27141c)
+
+![Postman API View](assets/api.png)
+
+_For parameter details, see [Postman API Metadata](#apis)._
+
+# Run it locally as a demo
 
 If you like to get a feeling how this plugin behaves in a preconfigured backstage instance, run a [demo docker image](https://github.com/postman-solutions-eng/backstage-postman-plugin/pkgs/container/backstage-postman-plugin) locally. Please adjust the `-e` environment parameters to your Postman org (see 👇 for their meaning).
 
 ```sh
 docker run -p 3000:3000 -e POSTMAN_SYNCH_TAG=backstage -e BACKSTAGE_ORG_NAME="Postman Backstage Demo"  -e APP_BASE_URL=http://localhost/ -e POSTMAN_API_BASE_URL=https://api.postman.com -e POSTMAN_API_KEY=PMAK-yourkey -e POSTMAN_TEAM_DOMAIN=yourdomain-without-http-prefix.postman.co -e PORT=3000 --rm -it --platform linux/amd64 ghcr.io/postman-solutions-eng/backstage-postman-plugin:1.0.5-sqlite 
 ```
-**Attention** Please note that this demo setup should not be used for ANY production purpose or with production data. Implementation in production will still require installation of the plugin in a customers Backstage instance(s) as described 👇.
+**Caution** Please note that this demo setup should not be used for ANY production purpose or with production data. Implementation in production will still require installation of the plugin in a customers Backstage instance(s) as described 👇.
 
 # Installation
 
+Install the plugins from your Backstage root using the following commands:
+
 ```sh
-# From your Backstage root directory
 yarn --cwd packages/app add @postman-solutions/postman-backstage-plugin
 yarn --cwd packages/backend add @postman-solutions/postman-backstage-backend-plugin
 ```
 
-The next step is configuring both plugins as described in the next two sections.
+# Configure Postman Frontend Plugin
 
-# Configure Postman Frontend Plugin for Backstage
-
-The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
-
-It is a community-driven initiative to extend Backstage functionalities with Postman.
-
-## Dependencies
-
-> [!IMPORTANT]
-> Please note that the frontend plugin will not function without the backend plugin.
-
-Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation).
-
-## Getting Started
-
-1. Configure your Postman API key in your local `app-config.yaml` or production `app-config.production.yaml` file:
-
-> [!CAUTION]
-> The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
+1. Configure your Postman API key in your local `app-config.local.yaml`:
 
 ```yaml
 postman:
-    baseUrl: https://api.postman.com
-    apiKey: ${YOUR_API_KEY_HERE}
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ADD_YOUR_POSTMAN_API_KEY
 ```
-
-To get a Postman API Key, follow the instructions [here](https://learning.postman.com/docs/developer/postman-api/make-postman-api-call/#get-your-api-key).
-
-2. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page. 
-
-``` ts
-// ... other imports here
-import { PostmanCard } from '@postman-solutions/postman-backstage-plugin';
-// ... other components
-const apiPage = (
-  <EntityLayout>
-    <EntityLayout.Route path="/" title="Overview">
-    // ... other elements
-    <Grid item md={6} xs={12}>
-      <PostmanCard />
-    </Grid>
-    // ... other elements
-    </EntityLayout.Route>
-  </EntityLayout>
-// ...
-);
-// ...
-```
-
-# Configure Postman Backend Plugin for Backstage
-
-This `postman-backend` plugin provides some Postman services that the Postman frontend plugin will use to render the different component views.
-
-## Prerequisites
-
-Before you begin, ensure you have the following:
-
-- Make sure the Postman Frontend Plugin is already installed and configured
-- A running instance of Backstage
-- Node.js and npm installed (Node.js 18.x or later is recommended)
-- Access to Postman API credentials
-
-## Configuration Guide
-
-This guide provides instructions for configuring your application to interact with the Postman API using the `app-config.yaml` file. Follow the steps below to set up your environment correctly.
-
-### Basic Configuration
-
-**API Key Setup**: First, make sure to include the base URL and set an environment variable `POSTMAN_API_KEY` with your Postman API key in the configuration file if not done already.
 
 > [!CAUTION]
 > The `apiKey` in the configuration should not belong to an admin or super admin user, as this would grant access to all collections and APIs in the team. Instead, use an `apiKey` from a user with access only to the information that can be safely displayed to the authenticated developer audience in Backstage. This principle of least privilege helps to maintain tight control over your Postman data and reduces the potential impact if a user adds a reference to an entity in a private workspace or accidentally tags a private API with the tag used by the Postman entity provider.
 
+2. In your `app-config.yaml` and `app-config.production.yaml`, use the following
+   syntax to reference environment variables:
+
 ```yaml
-    postman:
-        baseUrl: https://api.postman.com
-        apiKey: ${POSTMAN_API_KEY}
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ${POSTMAN_API_KEY}
 ```
 
-### Advanced Configuration
+3. Import and include the <PostmanCard /> component in your API page (e.g., at
+   `packages/app/src/components/Catalog/EntityPage.tsx`):
 
-1. **Entity Provider Setup**: The plugin includes an entity provider to fetch API assets from Postman periodically using a Postman tag. Tags can be added to [collections](https://learning.postman.com/docs/collections/using-collections/#tagging-a-collection) or [Postman APIs](https://learning.postman.com/docs/designing-and-developing-your-api/managing-apis/#tagging-apis). To use this option, please add the following settings to your `app-config.yaml`:
+```typescript
+// ...existing imports...
+import { PostmanCard } from "@postman-solutions/postman-backstage-plugin";
+// ...existing code...
+<EntityLayout>
+  <EntityLayout.Route path="/" title="Overview">
+    // ...existing elements...
+    <Grid item md={6} xs={12}>
+      <PostmanCard />
+    </Grid>
+    // ...existing elements...
+  </EntityLayout.Route>
+</EntityLayout>;
+// ...existing code...
+```
 
-    | Parameter | Schema Type | Optional | Description |
-    | --------- | ----------- | -------- | ----------- |
-    | `postman/team` | string | Yes | Name of your Postman team. For a team URL like `https://myteam.postman.co`, your team name would be `myteam.postman.co`. |
-    | `postman/owner` | string | Yes | Owner of the API assets. The default is "postman". Consider creating a User or Group for this owner. |
-    | `postman/synchEntitiesWithTag` | string | Yes | Postman tag used to fetch API assets. |
-    | `postman/entityProviderSynchInterval` | string | Yes | Interval (in hours) for fetching the API assets from Postman. |
-    | `postman/system` | string | Yes | System of the API assets. The default is "main". |
+## Optional Configuration
 
-    Example configuration:
+You can set a maximum height for the collection and API views using the
+following options:
 
-  ```yaml
-    postman:
-        baseUrl: https://api.postman.com
-        apiKey: ${POSTMAN_API_KEY}
-        team: my-team.postman.co
-        synchEntitiesWithTag: backstage
-        owner: postman-team
-        entityProviderSynchInterval: 2
-        system: my-system
-  ```
+- **Collection Description Content Max Height**: Set with
+  `collectionContentHeight` (type: `number`)
+- **API Description Max Height**: Set with `APIContentHeight` (type: `number`)
 
-2. **Caching Options**: The Postman backend plugin supports caching. Configure cache settings by adding the following properties:
+```typescript
+// ...existing imports...
+import { PostmanCard } from "@postman-solutions/postman-backstage-plugin";
+// ...existing code...
+<EntityLayout>
+  <EntityLayout.Route path="/" title="Overview">
+    // ...existing elements...
+    <Grid item md={6} xs={12}>
+      <PostmanCard collectionContentHeight={600} APIContentHeight={600} />
+    </Grid>
+    // ...existing elements...
+  </EntityLayout.Route>
+</EntityLayout>;
+// ...existing code...
+```
 
-    | Parameter | Schema Type | Optional | Description |
-    | --------- | ----------- | -------- | ----------- |
-    | `postman/cache/ttl` | number | Yes | Cache expiry time in milliseconds. The default is 600000 (10 minutes). |
+# Configure Postman Backend Plugin
 
-    Example configuration for a custom cache duration:
+The Postman Backend Plugin integrates with the Postman API to provide access to
+API metadata, versions, monitors, collections, tags, users, and workspaces. This
+integration allows your Backstage application to dynamically fetch and display
+relevant Postman data.
 
-    ```yaml
-    postman:
-        baseUrl: https://api.postman.com
-        apiKey: ${POSTMAN_API_KEY}
-        team: my-team.postman.co
-        cache:
-          ttl: 300000  # 5 minutes
-    ```
+## Features
 
-If you prefer not to utilise caching and always get the latest information from Postman, you can set the TTL value to 0 or any value smaller than the interval at which the entity service refreshes.
+This plugin exposes various endpoints, including:
 
-### Add the backend plugin to your Backstage application (newer Backstage versions >= v1.24)
+- API Information:
+  - GET `/apis/:id`
+  - GET `/apis/:id/versions`
+  - GET `/apis/:id/versions/:versionId`
+- Monitor Management:
+  - GET `/monitors`
+  - GET `/monitors/:id`
+- Collection Handling:
+  - GET `/collections/:id`
+  - GET `/tags/:tag/entities`
+  - GET `/collections/:id/tags`
+  - PUT `/collections/:id/tags`
+- User and Workspace Details:
+  - GET `/users`
+  - GET `/workspaces`
+  - GET `/workspace/:workspaceId`
 
-1. Modify file `packages/backend/src/index.ts`, and add the following to it:
+## Configuration
 
-```ts
-...
+In your backend module (usually `packages/backend/src/index.ts`), add the Postman backend plugin as follows:
 
-import { createBackend } from '@backstage/backend-defaults';
+```typescript
+// ...existing imports...
+backend.add(import('@postman-solutions/postman-backstage-backend-plugin'));
+// ...existing imports...
+backend.start();
+```
 
-// new code after other imports
-import { loggerToWinstonLogger, CacheManager } from '@backstage/backend-common';
+## Caching
+
+The backend plugin provides caching to reduce redundant HTTP requests and boost
+performance. The two main caching strategies are:
+
+1. HTTP Request Caching:
+   - Responses from the Postman API are cached based on a configurable TTL.
+2. Entity Data Caching:
+   - The PostmanEntityProvider caches entities between synchronization cycles to
+     decrease processing overhead.
+
+You can adjust the cache settings in your `app-config.yaml`:
+
+```yaml
+postman:
+  cache:
+    ttl: 60000 # Cache TTL in seconds. Default 600 seconds
+```
+
+## Entity Provider Integration (Optional)
+
+Entity Providers in Backstage enable automatic integration of external data into
+the catalog. The Postman EntityProvider allows you to:
+
+- Automatically fetch and synchronize collections or APIs tagged for inclusion
+  in your API catalog.
+- Benefit from built-in caching, which minimizes API requests.
+
+To set up the Postman **EntityProvider**:
+
+1. Ensure that your `app-config.yaml` includes the following configuration:
+
+```yaml
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ${POSTMAN_API_KEY}
+  entityProvider:
+    synchEntitiesWithTag: backstage-plugin # Tag used to fetch collections and APIs from Postman
+    synchInterval: 2 # Synchronization interval in minutes
+  cache:
+    ttl: 60000 # Cache TTL in seconds. Default 600 seconds. Default 600 milliseconds
+```
+
+2. In your backend module (usually `packages/backend/src/index.ts`), register
+   the provider:
+
+```typescript
+// ...existing imports...
+import { createBackendModule } from "@backstage/backend-plugin-api";
+import { catalogProcessingExtensionPoint } from "@backstage/plugin-catalog-node/alpha";
 import {
-  coreServices,
-  createBackendPlugin,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { PostmanEntityProvider, createRouter as postmanRouter } from '@postman-solutions/postman-backstage-backend-plugin';
+  NodeCacheService,
+  PostmanEntityProvider,
+} from "@postman-solutions/postman-backstage-backend-plugin";
 
-const backend = createBackend();
-...
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
-
-// new code after all other plugins have been added to backend
-
-backend.add(createBackendPlugin({
-  pluginId: 'postman',
-  register(env) {
-    env.registerInit({
-      deps: {
-        config: coreServices.rootConfig,
-        logger: coreServices.logger,
-        httpRouter: coreServices.httpRouter,
-      },
-      async init({ config, logger, httpRouter }) {
-        
-        const legacyLogger = loggerToWinstonLogger(logger);
-        httpRouter.use(await postmanRouter({ config, logger: legacyLogger }));
-        httpRouter.addAuthPolicy({
-          path: '/:id',
-          allow: 'unauthenticated',
-        })
-      },
-    });
-  },
-}));
-
-// optional for the entity service
-const postmanEntityServiceModule = createBackendModule({
-  pluginId: 'catalog', // name of the plugin that the module is targeting
-  moduleId: 'custom-extensions',
+export const catalogModulePostmanProvider = createBackendModule({
+  pluginId: "catalog",
+  moduleId: "postman-provider",
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.rootConfig,
-        logger: coreServices.logger,
-        scheduler: coreServices.scheduler,
+        reader: env.coreServices.urlReader,
+        scheduler: env.coreServices.scheduler,
+        config: env.coreServices.rootConfig,
+        logger: env.coreServices.logger,
       },
-      async init({ catalog, config, logger, scheduler}) {
-        const cacheManager = CacheManager.fromConfig(config);
-        const cache = cacheManager.forPlugin('postman').getClient({defaultTtl: config?.getNumber('postman.cache.ttl') ?? 60000 })
-        const postmanEntityProvider = PostmanEntityProvider.fromConfig(config, {logger: logger, cache})
-        const postmanEntityProviderSynchInterval = config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
-        catalog.addEntityProvider(postmanEntityProvider);
-
-        await scheduler.scheduleTask({
-          id: 'run_postman_entity_provider_refresh',
-          fn: async () => {
-            await postmanEntityProvider.run();
-          },
-          frequency: { minutes: postmanEntityProviderSynchInterval },
-          timeout: { minutes: 10 },
+      async init({ catalog, scheduler, config, logger }) {
+        const cache = new NodeCacheService({
+          defaultTtl: config.has("postman.cache.ttl")
+            ? config.getNumber("postman.cache.ttl")
+            : 600,
         });
-
+        const provider = PostmanEntityProvider.fromConfig(config, {
+          logger,
+          cache,
+        });
+        catalog.addEntityProvider(provider);
+        const synchInterval = config.has("postman.entityProvider.synchInterval")
+          ? config.getNumber("postman.entityProvider.synchInterval")
+          : null;
+        if (synchInterval) {
+          await scheduler.scheduleTask({
+            id: "run_postman_entity_provider_refresh",
+            fn: async () => await provider.run(),
+            frequency: { minutes: synchInterval },
+            timeout: { minutes: 10 },
+          });
+          logger.info("Postman EntityProvider registered with the catalog");
+        } else {
+          logger.info(
+            "Postman EntityProvider registered, but auto refresh is disabled",
+          );
+        }
       },
     });
   },
 });
-backend.add(postmanEntityServiceModule);
+```
 
+3. Finally, integrate the module into your backend initialization:
+
+```typescript
+// ...existing code...
+import { catalogModulePostmanProvider } from "@postman-solutions/postman-backstage-backend-plugin";
+// ...existing code...
+backend.add(catalogModulePostmanProvider);
 backend.start();
 ```
 
+# Backend Content Security Policy
 
-### Add the backend plugin to your Backstage application (older Backstage versions < 1.24)
-
-1. Create a new file named `packages/backend/src/plugins/postmanbackend.ts`, and add the following to it:
-
-```ts
-import { PluginEnvironment } from '../types';
-import { createRouter } from '@postman-solutions/postman-backstage-backend-plugin';
-
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config });
-}
-```
-
-2. Next, let's wire this into the overall backend router, edit `packages/backend/src/index.ts`:
-
-```ts
-import postmanbackend from './plugins/postmanbackend';
-// ...
-async function main() {
-  // ...
-  // Add this line under the other lines that follow the useHotMemoize pattern
-  const postmanBackEndEnv = useHotMemoize(module, () => createEnv('postman-backend'));
-  // ...
-  // Insert this line under the other lines that add their routers to apiRouter in the same way
-  apiRouter.use('/postman', await postmanbackend(postmanBackEndEnv));
-// ...
-}
-```
-
-3. (optional) you can run `yarn start-backend` from the root directory to start the backend server
-
-## Configuring the Postman Entity Provider (optional)
-
-The Postman EntityProvider is an optional component that allows you to dynamically retrieve Postman APIs and collections that have been tagged with a certain Postman tag, e.g. `backstage`.
-In order for it to work, you would need to add some more properties to your local `app-config.yaml` or production `app-config.production.yaml` file:
-
-```yaml
-postman:
-    baseUrl: https://api.postman.com
-    apiKey: ${POSTMAN_API_KEY}
-    synchEntitiesWithTag: TAG_NAME
-    entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
-```
-
-Additionally, if you are using an older version of Backstage ( < 1.24) you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
-
-``` ts
-...
-// new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-backend-plugin';
-import { CacheManager } from '@backstage/backend-common';
-...
-
-...
-    const builder = CatalogBuilder.create(env);
-    
-    // new code after builder got instantiated
-    const cacheManager = CacheManager.fromConfig(env.config);
-    const cache = cacheManager.forPlugin('postman').getClient({defaultTtl: env.config?.getNumber('postman.cache.ttl') ?? 60000 })
-    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger, cache})
-    const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
-    builder.addEntityProvider(postmanEntityProvider);
-
-...
-
-...
-    await processingEngine.start();
-
-    // new code after processing engine started
-    await env.scheduler.scheduleTask({
-      id: 'run_postman_entity_provider_refresh',
-      fn: async () => {
-        await postmanEntityProvider.run();
-      },
-      frequency: { minutes: postmanEntityProviderSynchInterval },
-      timeout: { minutes: 10 },
-    });
-...
-```
-
-For newer versions of Backstage (v1.24+), we included the entity service initialization code in our modifications for `packages/backend/src/index.ts`.
-
-# Configure Backend Content Security Policy to display embedded pictures (optional)
-
-If your Postman API docs contain embedded pictures like this one
-
-![image](https://github.com/postman-solutions-eng/backstage-postman-plugin/assets/1872314/70cd575c-f84d-4729-8fe0-e7b7c3084142)
-
-you would need to include the potential image sources into the **backend** section of your `app-config.production.yaml`:
+If your Postman API documentation includes embedded images, be sure to update
+your `app-config.production.yaml` to allow these images to be displayed
+correctly:
 
 ```yaml
 backend:
   csp:
     img-src:
-      # "'self'" and 'data' are from the backstage default but must be set since img-src is overwritten
       - "'self'"
-      - 'data:'
+      - "data:"
       - https://content.pstmn.io
       - https://i.imgur.com
       - https://avatars.githubusercontent.com
@@ -409,71 +400,36 @@ backend:
 
 # Postman Metadata Guide
 
-## Metadata Object Overview
+## Overview
 
-This section provides an overview of the metadata object for this Postman plugin in the context of the Backstage implementation. All parameters should only be defined with the `kind: API` in your YAML file. 
-
-All three options, API, Collections, and Monitor, can be used in conjunction.
+This guide details the metadata required for the Postman plugin. Use this
+metadata only for entities with `kind: API` in your YAML file. The options for
+API, Collections, and Monitor views can be combined.
 
 ## Common Parameters
 
-These parameters are common across different kinds of entities:
-
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/domain` | string | Yes | The sub-domain of your Postman instance. E.g. if your Postman URL is `postman-demo.postman.co`, use `postman-demo`. If not defined, the application will use `go.postman.co` to redirect users to Postman. |
-| `postman/workspace/id` | string | No | The ID of your Postman workspace. This ID will be used to construct the links to redirect to Postman.  |
+| Parameter              | Schema Type | Optional | Description                                                                                                                          |
+| ---------------------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `postman/workspace/id` | string      | Yes      | The Postman workspace ID. This parameter is necessary for constructing redirect links and fetching Postman monitors using their IDs. |
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/domain: "postman-demo"
   postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
 ```
 
-## APIs
+## Collections
 
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/api/id` | string | No | The ID of your Postman API. |
-| `postman/api/name` | string | Yes | (optional) The name of your Postman API. If referenced, this value will be used to fetch the API Postman monitor(s) using the API name. |
-
-
-### Using the API ID
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: calculation-grpc-api
-  postman/domain: "postman-demo"
-  postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
-  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
-```
-
-### API with API name
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: calculation-grpc-api
-  postman/domain: "postman-demo"
-  postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
-  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
-  postman/api/name: "YOUR_POSTMAN_API_NAME"
-```
-
-## Collections (Use collection tag or IDs)
-
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/collection/id` | string | Yes | The ID of your Postman collection. |
-| `postman/collections/ids` | array | Yes | An array of IDs of your Postman collections. |
-| `postman/collections/tag` | string | Yes | A string specifying the collection tag to retrieve. |
-| `postman/collections/pagination` | string | Yes | A 'true' or 'false" value to indicate whether you want to paginate through the results. |
+| Parameter                 | Schema Type | Optional | Description                                          |
+| ------------------------- | ----------- | -------- | ---------------------------------------------------- |
+| `postman/collection/id`   | string      | Yes      | The Postman collection ID.                           |
+| `postman/collections/ids` | array       | Yes      | An array of Postman collection IDs.                  |
+| `postman/collections/tag` | string      | Yes      | A tag to retrieve corresponding Postman collections. |
 
 ### Get collection by ID
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -483,41 +439,67 @@ metadata:
 ```
 
 ### Using collection tag
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/collections/pagination: 'true'
   postman/collections/tag: "YOUR_COLLECTION_TAG_HERE"
 ```
 
 ### Using collection IDs
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/collections/ids: ["YOUR_FIRST_COLLECTION_ID", "YOUR_SECOND_COLLECTION_ID"]
+  postman/collections/ids: [
+    "YOUR_FIRST_COLLECTION_ID",
+    "YOUR_SECOND_COLLECTION_ID",
+  ]
 ```
 
-## Monitors (Use monitor ID or name)
+### Collection Linker
 
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/monitor/id` | string | No | The ID of your Postman monitor. |
-| `postman/monitor/name` | string | No | The name of your Postman monitor. |
+The following metadata parameters are available to configure the Collection
+Linker feature:
+
+| Parameter                                      | Schema Type | Optional | Description                                                           |
+| ---------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------- |
+| `postman/collectionLinker/enabled`             | boolean     | Yes      | Enable or disable the Collection Linker for your API entities.              |
+| `postman/collectionLinker/workspaceVisibility` | string      | Yes      | Comma-separated list of workspace visibilities (e.g., 'team,public'). |
+
+```yaml
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ADD_YOUR_POSTMAN_API_KEY
+  collectionLinker:
+    enabled: true
+    workspaceVisibility: "public"
+```
+
+## Monitors
+
+| Parameter              | Schema Type | Optional | Description               |
+| ---------------------- | ----------- | -------- | ------------------------- |
+| `postman/monitor/id`   | string      | No       | The Postman monitor ID.   |
+| `postman/monitor/name` | string      | No       | The Postman monitor name. |
 
 ### Using monitor id
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
+  postman/workspace/id: "YOUR_WORKSPACE_ID"
   postman/monitor/id: "YOUR_MONITOR_ID_HERE"
 ```
 
 ### Using monitor name
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -526,18 +508,26 @@ metadata:
   postman/monitor/name: "YOUR_MONITOR_NAME_HERE"
 ```
 
+## APIs
 
-## License
+| Parameter        | Schema Type | Optional | Description         |
+| ---------------- | ----------- | -------- | ------------------- |
+| `postman/api/id` | string      | No       | The Postman API ID. |
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code according to the terms of the license.
+### Using the API ID
 
-## Contributing
-Thank you for considering contributing to this project. For more information on how to get started, please check out the [contribution guidelines](CONTRIBUTING.md).
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: calculation-grpc-api
+  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
+```
 
-## Code of Conduct
+# License, Contributing & Contact
 
-We expect all contributors to adhere to the [Code of Conduct](CODE_OF_CONDUCT.md). Please review the guidelines before contributing to ensure a positive and inclusive community for everyone.
-
-## Contact
-
-If you have any questions, concerns, or suggestions regarding this project, feel free to contact [@aphanor-postman](https://github.com/aphanor-postman) or [@jonico](https://github.com/jonico).
+For license information, contribution guidelines, and support, please refer to
+your project’s LICENSE, CONTRIBUTING.md, and CODE_OF_CONDUCT.md files. For
+further questions, contact
+[@aphanor-postman](https://github.com/aphanor-postman) or
+[@jonico](https://github.com/jonico).

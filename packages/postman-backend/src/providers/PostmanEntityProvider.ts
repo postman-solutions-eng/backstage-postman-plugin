@@ -1,67 +1,77 @@
-// Backstage services and components
-import { Config } from '@backstage/config';
-import { ApiEntityV1alpha1 } from '@backstage/catalog-model';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { EntityProvider, EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { ANNOTATION_LOCATION, ANNOTATION_ORIGIN_LOCATION, ANNOTATION_VIEW_URL } from '@backstage/catalog-model';
-import { buildClientSchema, printSchema } from 'graphql';
+import { Config } from "@backstage/config";
+import { ApiEntityV1alpha1 } from "@backstage/catalog-model";
+import { LoggerService } from "@backstage/backend-plugin-api";
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from "@backstage/plugin-catalog-node";
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  ANNOTATION_VIEW_URL,
+} from "@backstage/catalog-model";
+import { buildClientSchema, printSchema } from "graphql";
 
-// Cache Service
-import { CacheClient } from '@backstage/backend-common';
+// Your CacheService implementation (external to Backstage)
+import { CacheService } from "../services/node-cache/cacheService";
 
 // Postman Service
-import { PostmanService } from '../service/postman/PostmanService';
+import { PostmanService } from "../services/postman";
 
 function calculatePostmanGoUrlFromAPIUrl(postmanAPIUrl: string): string {
-  // Create a new URL object
   const url = new URL(postmanAPIUrl);
-
-  // Extract the hostname from the URL
   let domain = url.hostname;
-
-  // Split the domain into parts
-  const domainParts = domain.split('.');
-
-  // Check if 'api' is a subdomain and replace it with 'go'
-  if (domainParts[0] === 'api') {
-    domainParts[0] = 'go';
+  const domainParts = domain.split(".");
+  if (domainParts[0] === "api") {
+    domainParts[0] = "go";
   }
-
-  // Replace the last part of the domain with 'co'
-  domainParts[domainParts.length - 1] = 'co';
-
-  // Join the domain parts back together
-  domain = domainParts.join('.');
-
-  // add original protocol again
-  domain = `${url.protocol}//${domain}`;
-
-  return domain;
+  domainParts[domainParts.length - 1] = "co";
+  domain = domainParts.join(".");
+  return `${url.protocol}//${domain}`;
 }
 
 export class PostmanEntityProvider implements EntityProvider {
-
   private readonly baseUrl: string;
   private readonly logger: LoggerService;
-
   protected goUrl: string;
-  protected cache: CacheClient;
-  protected readonly owner: string;
+  protected cache: CacheService;
   protected readonly tag: string;
   protected readonly apiKey: string;
+  protected readonly collectionLinkerConfig: any;
+  protected readonly owner: string;
+  protected readonly system: string;
   protected postmanService: PostmanService;
   protected connection?: EntityProviderConnection;
 
-  static fromConfig(config: Config, options: { logger: LoggerService, cache: CacheClient }) {
-
-    // Required parameters
-    const apiKey = config?.getString('postman.apiKey');
-    const baseUrl = config?.getString('postman.baseUrl');
-
+  /**
+   * Factory method used by the plugin environment to instantiate the provider.
+   * In the new backend system, you’ll pass in the configuration (typically the injected
+   * root config via coreServices.rootConfig) along with other required dependencies.
+   */
+  static fromConfig(
+    config: Config,
+    options: { logger: LoggerService; cache: CacheService },
+  ): PostmanEntityProvider {
+    // Required parameters from configuration
+    const apiKey = config.getString("postman.apiKey");
+    const baseUrl = config.getString("postman.baseUrl");
     // Optional parameters
-    const owner: string = config?.has('postman.owner') ? config.getString('postman.owner') : 'postman';
-    const tag: string = config?.has('postman.synchEntitiesWithTag') ? config.getString('postman.synchEntitiesWithTag') : '';
-    const postmanDomain: string = config?.has('postman.team') ? `https://${config.getString('postman.team')}` : calculatePostmanGoUrlFromAPIUrl(config.getString('postman.baseUrl'));
+    const collectionLinkerConfig = {
+      enabled: config.has('postman.collectionLinker.enabled') ? config.getBoolean('postman.collectionLinker.enabled') : false,
+      workspaceVisibility: config.has('postman.collectionLinker.workspaceVisibility') ? config.getString('postman.collectionLinker.workspaceVisibility') : 'team,public'
+    };
+    const owner: string = config.has("postman.owner")
+      ? config.getString("postman.owner")
+      : "postman";
+    const system: string = config.has("postman.system")
+      ? config.getString("postman.system")
+      : "main";
+    const tag: string = config.has("postman.entityProvider.synchEntitiesWithTag")
+      ? config.getString("postman.entityProvider.synchEntitiesWithTag")
+      : "";
+    const postmanDomain: string = config.has("postman.team")
+      ? `https://${config.getString("postman.team")}`
+      : calculatePostmanGoUrlFromAPIUrl(baseUrl);
 
     return new PostmanEntityProvider({
       ...options,
@@ -69,91 +79,148 @@ export class PostmanEntityProvider implements EntityProvider {
       apiKey,
       owner,
       tag,
-      postmanDomain
-    })
+      system,
+      postmanDomain,
+      collectionLinkerConfig
+    });
   }
 
   private constructor(options: {
-    logger: LoggerService,
-    cache: CacheClient,
-    baseUrl: string,
-    apiKey: string,
-    owner: string,
-    tag: string,
-    postmanDomain: string
+    logger: LoggerService;
+    cache: CacheService;
+    baseUrl: string;
+    apiKey: string;
+    collectionLinkerConfig: any
+    owner: string;
+    system: string;
+    tag: string;
+    postmanDomain: string;
   }) {
     this.owner = options.owner;
+    this.system = options.system;
     this.tag = options.tag;
     this.cache = options.cache;
     this.logger = options.logger;
     this.apiKey = options.apiKey;
+    this.collectionLinkerConfig = options.collectionLinkerConfig;
     this.baseUrl = options.baseUrl;
     this.goUrl = options.postmanDomain;
-    this.postmanService = new PostmanService(this.baseUrl ?? '', this.apiKey ?? '', this.cache);
+    // Instantiate the PostmanService using the provided parameters and cache instance.
+    this.postmanService = new PostmanService(
+      this.baseUrl,
+      this.apiKey,
+      this.collectionLinkerConfig,
+      this.cache
+    );
   }
+
   getProviderName(): string {
     return `postmanProvider`;
   }
 
   public async connect(connection: EntityProviderConnection): Promise<void> {
-    this.connection = connection
+    this.connection = connection;
+    this.logger.info(
+      `PostmanEntityProvider connected: ${JSON.stringify(this.connection)}`,
+    );
   }
 
   async run(): Promise<void> {
+    const maxWaitTimeMs = 10000;
+    const intervalMs = 100;
+    let waited = 0;
+
+    while (!this.connection && waited < maxWaitTimeMs) {
+      this.logger.warn("Connection not yet initialized; waiting...");
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      waited += intervalMs;
+    }
+
     if (!this.connection) {
-      throw new Error('User Connection Not initialized');
+      this.logger.error("Connection was not initialized after waiting.");
+      throw new Error("User Connection not initialized");
     }
 
-    if (this.baseUrl === '' || this.baseUrl === '' || this.tag === '') {
-      this.logger.info("Do not automatically synch Postman Entities from tags as required parameters are not set.");
-      return
+    if (this.baseUrl === "" || this.tag === "") {
+      this.logger.info(
+        "Not automatically syncing Postman entities since required parameters are not set.",
+      );
+      return;
     }
 
-    const collections = [];
-    const apis = [];
+    const collections: any[] = [];
+    const apis: any[] = [];
     const apiEntities: ApiEntityV1alpha1[] = [];
 
     this.logger.info(`Retrieving collections with tag ${this.tag} ...`);
 
-    // In the first call, we don't pass the cursor, we iterate as long as the response has a cursor called meta.nextCursor
     let cursor: string | undefined;
     do {
-      const _response = await this.postmanService.getPostmanCollectionsByTag(this.tag, cursor);
+      const _response = await this.postmanService.getPostmanCollectionsByTag(
+        this.tag,
+        cursor,
+      );
 
-      for await (const collection of _response.data.entities
-        .filter((_entity: any) => _entity.entityType === 'collection')) {
+      // Process collections
+      for await (
+        const collection of _response.data.entities.filter(
+          (_entity: any) => _entity.entityType === "collection",
+        )
+      ) {
         try {
-          const response = await this.postmanService.getPostmanCollection(collection.entityId);
-          const tags = await this.postmanService.getCollectionTags(collection.entityId);
-          collections.push({ ...response.collection.info, id: collection.entityId, definition: JSON.stringify(response, null, 4), tags });
+          const response = await this.postmanService.getPostmanCollection(
+            collection.entityId,
+          );
+          const tags = await this.postmanService.getCollectionTags(
+            collection.entityId,
+          );
+          collections.push({
+            ...response.collection.info,
+            id: collection.entityId,
+            definition: JSON.stringify(response, null, 4),
+            tags,
+          });
         } catch (error) {
-          this.logger.error(`Error processing collection ${collection.entityId}: ${error}`);
+          this.logger.error(
+            `Error processing collection ${collection.entityId}: ${error}`,
+          );
         }
       }
 
-      for await (const api of _response.data.entities
-        .filter((_entity: any) => _entity.entityType === 'api')) {
+      // Process APIs
+      for await (
+        const api of _response.data.entities.filter(
+          (_entity: any) => _entity.entityType === "api",
+        )
+      ) {
         try {
-          const response = await this.postmanService.getPostmanAPIData(api.entityId);
+          const response = await this.postmanService.getPostmanAPIData(
+            api.entityId,
+          );
           const tags = await this.postmanService.getAPITags(api.entityId);
-          apis.push({ ...response, definition: JSON.stringify(response, null, 4), tags });
+          apis.push({
+            ...response,
+            definition: JSON.stringify(response, null, 4),
+            tags,
+          });
         } catch (error) {
           this.logger.error(`Error processing API ${api.entityId}: ${error}`);
         }
       }
-      
-      collections.forEach(collection => {
+
+      // Create catalog entities from collections
+      collections.forEach((collection) => {
         try {
           this.logger.info(`Processing collection ${collection.id} ...`);
           const apiEntity: ApiEntityV1alpha1 = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
+            apiVersion: "backstage.io/v1alpha1",
+            kind: "API",
             spec: {
-              type: 'rest',
-              lifecycle: 'experimental',
+              type: "rest",
+              lifecycle: "experimental",
               owner: this.owner,
               definition: collection.definition,
-              system: 'main'
+              system: this.system,
             },
             metadata: {
               name: collection.uid,
@@ -164,72 +231,84 @@ export class PostmanEntityProvider implements EntityProvider {
               annotations: {
                 [ANNOTATION_LOCATION]: `url:${this.baseUrl}`,
                 [ANNOTATION_ORIGIN_LOCATION]: `url:${this.baseUrl}`,
-                [ANNOTATION_VIEW_URL]: `${this.goUrl}/collection/${collection.id}`
+                [ANNOTATION_VIEW_URL]:
+                  `${this.goUrl}/collection/${collection.id}`,
               },
-            }
-          }
+            },
+          };
           apiEntities.push(apiEntity);
         } catch (error) {
-          this.logger.error(`Error processing collection ${collection.id}: ${error}`);
+          this.logger.error(
+            `Error processing collection ${collection.id}: ${error}`,
+          );
         }
       });
 
+      // Create catalog entities from APIs
       for await (const api of apis) {
         try {
           this.logger.info(`Processing API ${api.id} ...`);
 
           let apiDefinition;
-          let apiType = 'rest'; // Default to 'rest'
+          let apiType = "rest";
 
           try {
             apiDefinition = JSON.parse(api?.definition);
-            apiType = apiDefinition?.gitInfo ? 'rest' : 'openapi';
+            apiType = apiDefinition?.gitInfo ? "rest" : "openapi";
           } catch (error) {
-            // If it's not a valid JSON, use the verbatim content
             apiDefinition = api?.definition;
           }
 
           try {
             if (apiDefinition?.schemas?.length > 0) {
               const schema = apiDefinition.schemas[0];
-              const _definition = await this.postmanService.getPostmanAPISchema(api.id, schema.id);
-              apiType = _definition.type.includes('openapi') ? 'openapi' : _definition.type;
+              const _definition = await this.postmanService.getPostmanAPISchema(
+                api.id,
+                schema.id,
+              );
+              apiType = _definition.type.includes("openapi")
+                ? "openapi"
+                : _definition.type;
               try {
-                if (apiType === 'openapi') {
+                if (apiType === "openapi") {
                   apiDefinition = JSON.parse(_definition.content);
                   apiDefinition = JSON.stringify(apiDefinition, null, 4);
-                } else if (apiType === 'graphql') {
-                  const schema = buildClientSchema(JSON.parse(_definition.content)?.data);
-                  apiDefinition = printSchema(schema);
+                } else if (apiType === "graphql") {
+                  const _schema = buildClientSchema(
+                    JSON.parse(_definition.content)?.data,
+                  );
+                  apiDefinition = printSchema(_schema);
                 } else {
                   apiDefinition = _definition.content;
                 }
               } catch (error) {
-                // If it's not a valid JSON, use the verbatim content
                 apiDefinition = _definition.content;
               }
             } else {
               try {
-                apiDefinition = JSON.stringify(JSON.parse(api?.definition), null, 4);
+                apiDefinition = JSON.stringify(
+                  JSON.parse(api?.definition),
+                  null,
+                  4,
+                );
               } catch (error) {
-                // If it's not a valid JSON, use the verbatim content
                 apiDefinition = api?.definition;
               }
             }
           } catch (error) {
-            this.logger.warn(`Error reading API schena of ${api.id}: ${error}`);
+            this.logger.warn(`Error reading API schema of ${api.id}: ${error}`);
             apiDefinition = api?.definition;
           }
 
           const apiEntity: ApiEntityV1alpha1 = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
+            apiVersion: "backstage.io/v1alpha1",
+            kind: "API",
             spec: {
               type: apiType,
-              lifecycle: 'experimental',
+              lifecycle: "experimental",
               owner: this.owner,
               definition: apiDefinition,
-              system: 'main'
+              system: this.system,
             },
             metadata: {
               name: api.id,
@@ -241,23 +320,22 @@ export class PostmanEntityProvider implements EntityProvider {
               annotations: {
                 [ANNOTATION_LOCATION]: `url:${this.baseUrl}`,
                 [ANNOTATION_ORIGIN_LOCATION]: `url:${this.baseUrl}`,
-                [ANNOTATION_VIEW_URL]: `${this.goUrl}/api/${api.id}`
+                [ANNOTATION_VIEW_URL]: `${this.goUrl}/api/${api.id}`,
               },
-            }
-          }
+            },
+          };
           apiEntities.push(apiEntity);
         } catch (error) {
           this.logger.error(`Error processing API ${api.id}: ${error}`);
         }
-      };
+      }
 
       await this.connection.applyMutation({
-        type: 'full',
-        entities: apiEntities.map((entity) => ({
-          entity
-        })),
-      })
+        type: "full",
+        entities: apiEntities.map((entity) => ({ entity })),
+      });
+
       cursor = _response.meta.nextCursor;
-    } while (cursor)
+    } while (cursor);
   }
 }

@@ -10,9 +10,9 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 
-import APIView from './../../examples/images/api.png';
-import MonitorView from './../../examples/images/monitor.png';
-import CollectionView from './../../examples/images/collections.png';
+import APIView from './../../../examples/images/api.png';
+import MonitorView from './../../../examples/images/monitor.png';
+import CollectionView from './../../../examples/images/collections.png';
 
 const ReadMe = `
 This plugin offers several views which you can use to display published API information stored in Postman, show collections with a *Run In Postman* button and allows you to view your Postman monitor results on the API page.

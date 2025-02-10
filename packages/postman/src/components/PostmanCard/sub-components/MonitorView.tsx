@@ -4,7 +4,7 @@ import React from 'react';
 import Alert from '@mui/material/Alert';
 import DoneIcon from '@material-ui/icons/Done';
 import InfoIcon from '@mui/icons-material/Info';
-import { Box, Tooltip, Typography } from '@material-ui/core';
+import { Box, Tooltip, Typography, Link } from '@material-ui/core';
 
 const MonitorView = ({ postmanContext }: { postmanContext: any }): any => {
 
@@ -36,7 +36,9 @@ const { goUrl, APIHealth } = postmanContext;
             </Typography>
             {APIHealth?.monitor?.id && (
               <Typography variant="body2" style={{ fontSize: 12 }} component="div">
-                <a style={{ textDecoration: 'underline' }} target='_blank' href={`https://${goUrl}/monitor/${APIHealth?.monitor?.id}`}>View monitor</a>
+                <Link style={{ textDecoration: 'underline' }} href={`https://${goUrl}/monitor/${APIHealth?.monitor?.id}`} target="_blank" rel="noopener">
+                  View monitor
+                </Link>
               </Typography>
             )}
           </Alert>

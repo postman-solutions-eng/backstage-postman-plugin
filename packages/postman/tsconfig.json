@@ -3,7 +3,7 @@
     "include": [
         "src"
     ],
-    "files": ["globals.d.ts"],
+    "files": ["globals.d.ts", "src/svg.d.ts"],
     "exclude": ["node_modules"],
     "compilerOptions": {
         "outDir": "dist-types",

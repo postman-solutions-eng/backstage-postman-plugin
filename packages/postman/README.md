@@ -1,158 +1,122 @@
 # Postman Plugin for Backstage
 
-The Postman frontend plugin enables you to link your APIs to their corresponding collections, published APIs and monitors within Postman. You can also discover APIs and collections within your Postman Team that have been tagged with a tag of your choice and add them to the catalogue.
+The Postman plugin integrates Postman with Backstage, allowing you to link your APIs to their corresponding collections, published APIs, and monitors within Postman. It also enables you to discover and add APIs and collections tagged in your Postman Team into your catalog. 
 
-It is a community-driven initiative to extend Backstage functionalities with Postman.
+This is a community-driven project that extends Backstage functionalities with Postman.
 
 ## Disclaimer
-This plugin is not officially supported by Postman and is intended for Backstage users to integrate Postman into their API documentation easily.
+This plugin is not officially supported by Postman. It is intended solely for Backstage users who need to integrate Postman into their API documentation processes.
 
-## Dependencies
+## Production Deployment
+For production use, please refer to the guidelines in [Postman Backend Plugin Installation Steps](https://github.com/postman-solutions-eng/backstage-postman-plugin).
 
-> [!IMPORTANT]
-> Please note that the frontend plugin will not function without the backend plugin.
+## Local Deployment & Contribution
+To run the Postman plugin locally in your Backstage application, install the following plugins:
 
-Refer to the installation steps for the backend plugin [here](https://github.com/postman-solutions-eng/backstage-postman-plugin?tab=readme-ov-file#installation).
+1. **Postman Front-end Plugin:** Clone this directory into your project's `plugins/` folder to add frontend components.
+2. **Postman Backend Plugin (`postman-backend`):** This plugin enables secure communication with Postman services and must be installed for the frontend plugin to function.
+
+For installation instructions on the backend plugin, see [Postman Backend Plugin Installation](https://github.com/postman-solutions-eng/backstage-postman-plugin/tree/main/plugins/postman-backend).
 
 ## Getting Started
 
-1. Import and add the <PostmanCard /> component in your `packages/app/src/components/Catalog/EntityPage.tsx` page to display the Postman card on your API page.
-
-``` ts
-// ... other imports here
-import { PostmanCard } from '@postman-solutions/postman-backstage-plugin';
-// ... other components
-const apiPage = (
-  <EntityLayout>
-    <EntityLayout.Route path="/" title="Overview">
-    // ... other elements
-    <Grid item md={6} xs={12}>
-      <PostmanCard />
-    </Grid>
-    // ... other elements
-    </EntityLayout.Route>
-  </EntityLayout>
-// ...
-);
-// ...
-```
-
-2. Edit your `entities.yaml` file and add the [Postman metadata](#postman-metadata-guide) to display the different views that this plugin offers. More information about the metadata object can be found [here](#postman-metadata-guide).
-
-## Configuring the Postman Entity Provider (optional)
-
-The Postman EntityProvider is an optional component that allows you to dynamically retrieve Postman APIs and collections that have been tagged with a certain Postman tag, e.g. `backstage`.
-In order for it to work, you would need to add some more properties to your local `app-config.yaml` or production `app-config.production.yaml` file:
+1. Configure your Postman API key in your local `app-config.local.yaml`:
 
 ```yaml
 postman:
-    baseUrl: https://api.postman.com
-    apiKey: 
-        $env: YOUR_ENVIRONMENT_VARIABLE_NAME
-    synchEntitiesWithTag: TAG_NAME
-    entityProviderSynchInterval: SYNC_FREQUENCY_IN_MINUTES (optional)    
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ADD_YOUR_POSTMAN_API_KEY
 ```
 
-Additionally, you would need to insert the following lines into your `packages/backend/src/plugins/catalog.ts` file:
+2. In your `app-config.yaml` and `app-config.production.yaml`, use the following
+   syntax to reference environment variables:
 
-``` ts
-...
-// new code after other imports
-import { PostmanEntityProvider } from '@postman-solutions/postman-backstage-plugin-backend';
-...
-
-...
-    const builder = CatalogBuilder.create(env);
-    
-    // new code after builder got instantiated
-    const postmanEntityProvider = PostmanEntityProvider.fromConfig(env.config, {logger: env.logger})
-    const postmanEntityProviderSynchInterval = env.config?.getNumber('postman.entityProviderSynchInterval') ?? 5;
-    builder.addEntityProvider(postmanEntityProvider);
-
-...
-
-...
-    await processingEngine.start();
-
-    // new code after processing engine started
-    await env.scheduler.scheduleTask({
-      id: 'run_postman_entity_provider_refresh',
-      fn: async () => {
-        await postmanEntityProvider.run();
-      },
-      frequency: { minutes: postmanEntityProviderSynchInterval },
-      timeout: { minutes: 10 },
-    });
-...
+```yaml
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ${POSTMAN_API_KEY}
 ```
 
-# Postman Metadata Guide
+3. Import and include the <PostmanCard /> component in your API page (e.g., at
+   `packages/app/src/components/Catalog/EntityPage.tsx`):
 
-## Metadata Object Overview
+```typescript
+// ...existing imports...
+import { PostmanCard } from "@postman-solutions/postman-backstage-plugin";
+// ...existing code...
+<EntityLayout>
+  <EntityLayout.Route path="/" title="Overview">
+    // ...existing elements...
+    <Grid item md={6} xs={12}>
+      <PostmanCard />
+    </Grid>
+    // ...existing elements...
+  </EntityLayout.Route>
+</EntityLayout>;
+// ...existing code...
+```
 
-This section provides an overview of the metadata object for this Postman plugin in the context of the Backstage implementation. All parameters should only be defined with the `kind: API` in your YAML file. 
+### Optional Configuration
 
-All three options, API, Collections, and Monitor, can be used in conjunction.
+You can set a maximum height for the collection and API views using the
+following options:
 
-## Common Parameters
+- **Collection Description Content Max Height**: Set with
+  `collectionContentHeight` (type: `number`)
+- **API Description Max Height**: Set with `APIContentHeight` (type: `number`)
 
-These parameters are common across different kinds of entities:
+```typescript
+// ...existing imports...
+import { PostmanCard } from "@postman-solutions/postman-backstage-plugin";
+// ...existing code...
+<EntityLayout>
+  <EntityLayout.Route path="/" title="Overview">
+    // ...existing elements...
+    <Grid item md={6} xs={12}>
+      <PostmanCard collectionContentHeight={600} APIContentHeight={600} />
+    </Grid>
+    // ...existing elements...
+  </EntityLayout.Route>
+</EntityLayout>;
+// ...existing code...
+```
 
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/domain` | string | Yes | The sub-domain of your Postman instance. E.g. if your Postman URL is `postman-demo.postman.co`, use `postman-demo`. If not defined, the application will use `go.postman.co` to redirect users to Postman. |
-| `postman/workspace/id` | string | No | The ID of your Postman workspace. This ID will be used to construct the links to redirect to Postman.  |
+## Plugin Views
+
+Please refer to the examoles in [Postman Plugin Views](https://github.com/postman-solutions-eng/backstage-postman-plugin).
+
+## Postman Metadata Guide
+
+### Overview
+
+This guide details the metadata required for the Postman plugin. Use this
+metadata only for entities with `kind: API` in your YAML file. The options for
+API, Collections, and Monitor views can be combined.
+
+### Common Parameters
+
+| Parameter              | Schema Type | Optional | Description                                                                                                                          |
+| ---------------------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `postman/workspace/id` | string      | Yes      | The Postman workspace ID. This parameter is necessary for constructing redirect links and fetching Postman monitors using their IDs. |
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/domain: "postman-demo"
   postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
 ```
 
-## APIs
+### Collections
 
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/api/id` | string | No | The ID of your Postman API. |
-| `postman/api/name` | string | Yes | (optional) The name of your Postman API. If referenced, this value will be used to fetch the API Postman monitor(s) using the API name. |
+| Parameter                 | Schema Type | Optional | Description                                          |
+| ------------------------- | ----------- | -------- | ---------------------------------------------------- |
+| `postman/collection/id`   | string      | Yes      | The Postman collection ID.                           |
+| `postman/collections/ids` | array       | Yes      | An array of Postman collection IDs.                  |
+| `postman/collections/tag` | string      | Yes      | A tag to retrieve corresponding Postman collections. |
 
+#### Get collection by ID
 
-### Using the API ID
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: calculation-grpc-api
-  postman/domain: "postman-demo"
-  postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
-  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
-```
-
-### API with API name
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: calculation-grpc-api
-  postman/domain: "postman-demo"
-  postman/workspace/id: "YOUR_WORKSPACE_ID_HERE"
-  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
-  postman/api/name: "YOUR_POSTMAN_API_NAME"
-```
-
-## Collections (Use collection tag or IDs)
-
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/collection/id` | string | Yes | The ID of your Postman collection. |
-| `postman/collections/ids` | array | Yes | An array of IDs of your Postman collections. |
-| `postman/collections/tag` | string | Yes | A string specifying the collection tag to retrieve. |
-| `postman/collections/pagination` | string | Yes | A 'true' or 'false" value to indicate whether you want to paginate through the results. |
-
-### Get collection by ID
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -161,46 +125,88 @@ metadata:
   postman/collection/id: "YOUR_COLLECTION_ID"
 ```
 
-### Using collection tag
+#### Using collection tag
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/collections/pagination: 'true'
   postman/collections/tag: "YOUR_COLLECTION_TAG_HERE"
 ```
 
-### Using collection IDs
+#### Using collection IDs
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
-  postman/collections/ids: ["YOUR_FIRST_COLLECTION_ID", "YOUR_SECOND_COLLECTION_ID"]
+  postman/collections/ids: [
+    "YOUR_FIRST_COLLECTION_ID",
+    "YOUR_SECOND_COLLECTION_ID",
+  ]
 ```
 
-## Monitors (Use monitor ID or name)
+### Collection Linker
 
-| Parameter | Schema Type | Optional | Description |
-| --------- | ----------- | -------- | ----------- |
-| `postman/monitor/id` | string | No | The ID of your Postman monitor. |
-| `postman/monitor/name` | string | No | The name of your Postman monitor. |
+The following metadata parameters are available to configure the Collection
+Linker feature:
 
-### Using monitor id
+| Parameter                                      | Schema Type | Optional | Description                                                           |
+| ---------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------- |
+| `postman/collectionLinker/enabled`             | boolean     | Yes      | Enable or disable the Collection Linker for your API entities.              |
+| `postman/collectionLinker/workspaceVisibility` | string      | Yes      | Comma-separated list of workspace visibilities (e.g., 'team,public'). |
+
+```yaml
+postman:
+  baseUrl: https://api.postman.com # For EU data center, use: https://api.eu.postman.com
+  apiKey: ADD_YOUR_POSTMAN_API_KEY
+  collectionLinker:
+    enabled: true
+    workspaceVisibility: "public"
+```
+
+### Monitors
+
+| Parameter              | Schema Type | Optional | Description               |
+| ---------------------- | ----------- | -------- | ------------------------- |
+| `postman/monitor/id`   | string      | No       | The Postman monitor ID.   |
+| `postman/monitor/name` | string      | No       | The Postman monitor name. |
+
+#### Using monitor id
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
+  postman/workspace/id: "YOUR_WORKSPACE_ID"
   postman/monitor/id: "YOUR_MONITOR_ID_HERE"
 ```
 
-### Using monitor name
+#### Using monitor name
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: calculation-grpc-api
   postman/monitor/name: "YOUR_MONITOR_NAME_HERE"
+```
+
+### APIs
+
+| Parameter        | Schema Type | Optional | Description         |
+| ---------------- | ----------- | -------- | ------------------- |
+| `postman/api/id` | string      | No       | The Postman API ID. |
+
+#### Using the API ID
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: calculation-grpc-api
+  postman/api/id: "YOUR_POSTMAN_API_ID_HERE"
 ```
