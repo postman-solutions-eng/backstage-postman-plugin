@@ -312,7 +312,7 @@ postman:
     synchEntitiesWithTag: backstage-plugin # Tag used to fetch collections and APIs from Postman
     synchInterval: 2 # Synchronization interval in minutes
   cache:
-    ttl: 60000 # Cache TTL in seconds. Default 600 seconds. Default 600 milliseconds
+    ttl: 60000 # Cache TTL in seconds. Default 600 seconds.
 ```
 
 2. In your backend module (usually `packages/backend/src/index.ts`), register
