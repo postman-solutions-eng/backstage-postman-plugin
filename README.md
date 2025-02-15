@@ -150,12 +150,13 @@ _For parameter details, see [Postman API Metadata](#apis)._
 
 # Run it locally as a demo
 
-If you like to get a feeling how this plugin behaves in a preconfigured backstage instance, run a [demo docker image](https://github.com/postman-solutions-eng/backstage-postman-plugin/pkgs/container/backstage-postman-plugin) locally. Please adjust the `-e` environment parameters to your Postman org (see 👇 for their meaning).
+To get a feel for how this plugin behaves in a preconfigured Backstage instance, run a [demo Docker image](https://github.com/postman-solutions-eng/backstage-postman-plugin/pkgs/container/backstage-postman-plugin) locally. Adjust the `-e` environment parameters to match your Postman organization (see details below 👇).
 
 ```sh
 docker run -p 3000:3000 -e POSTMAN_SYNCH_TAG=backstage -e BACKSTAGE_ORG_NAME="Postman Backstage Demo"  -e APP_BASE_URL=http://localhost/ -e POSTMAN_API_BASE_URL=https://api.postman.com -e POSTMAN_API_KEY=PMAK-yourkey -e POSTMAN_TEAM_DOMAIN=yourdomain-without-http-prefix.postman.co -e PORT=3000 --rm -it --platform linux/amd64 ghcr.io/postman-solutions-eng/backstage-postman-plugin:1.0.5-sqlite 
 ```
-**Caution** Please note that this demo setup should not be used for ANY production purpose or with production data. Implementation in production will still require installation of the plugin in a customers Backstage instance(s) as described 👇.
+> [!CAUTION]
+> This demo setup is not intended for production use or for handling production data. For production environments, you must install the plugin on your Backstage instance(s) following the installation instructions provided below 👇.
 
 # Installation
 
