@@ -1,0 +1,15 @@
+{
+  "workspace": {
+    "id": "1fe0811a-f496-48db-875c-f9b60d326931"
+  },
+  "entities": {
+    "collections": [
+      "../postman/collections/Postman Demo Collection_47929985-d518a25e-467c-41a8-9a94-d3d515300449.postman_collection.json",
+      "../postman/collections/Desjardins Banking API_47929985-ef219539-babf-4e7a-8c43-f3bb79ffedf1.postman_collection.json"
+    ],
+    "environments": [],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
+}

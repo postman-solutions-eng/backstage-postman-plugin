@@ -1,0 +1,106 @@
+{
+  "info": {
+    "_postman_id": "d518a25e-467c-41a8-9a94-d3d515300449",
+    "name": "Postman Demo Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Echo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response time is below 2000ms\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(2000);\n});\n\npm.test(\"Response has a JSON body\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Response body contains a url field equal to https://postman-echo.com/get\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.url).to.eql(\"https://postman-echo.com/get\");\n});\n\npm.test(\"Response body contains a headers object\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.headers).to.be.an(\"object\");\n});"
+            ]
+          },
+          "disabled": false
+        }
+      ],
+      "id": "868a0b81-6171-4afd-a542-7909fd6e0e1d",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://postman-echo.com/get",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "get"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post Echo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "b3ac7cad-efca-4065-94c9-7eb35e3ddb36",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response time is below 2000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test(\"Response has a JSON body\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Response body contains a url field equal to https://postman-echo.com/post\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.url).to.eql(\"https://postman-echo.com/post\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          },
+          "disabled": false
+        }
+      ],
+      "id": "01cf3334-fee7-4786-bc56-2ffe477541db",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"demo\": {\n        \"Test\": true\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
